@@ -31,16 +31,23 @@ class GeneticAlgorithm():
 
         return population
 
-    def train(self, epochs: int, pop_size: int) -> Tuple[Genome, float]:
+    def train(
+        self,
+        epochs: int,
+        pop_size: int,
+        verbose: bool = False
+    ) -> Tuple[Genome, float]:
+        """Fit the population through the epochs."""
         # initialize the population for this round
         population = self._pop_generator(pop_size)
 
         for i in range(epochs):
             # sort the population according to their fitness
             population.sort(key=lambda x: self.fitness_function(x))
-            # print the partial results
-            print("Epoch %i got fitness %.2f" % (
-                i, self.fitness_function(population[0])), population[0])
+            # print the partial results if verbose
+            if verbose:
+                print("Epoch %i got fitness %.2f" % (
+                    i, self.fitness_function(population[0])), population[0])
             # keep the 2 most fitted and repopulate with new ones
             population = population[:2] + self._pop_generator(
                 pop_size=pop_size-2)

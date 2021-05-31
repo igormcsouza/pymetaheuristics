@@ -6,7 +6,7 @@ from pymetaheuristics.genetic_algorithm.types import Genome
 
 cities_list = list()
 for _ in range(5):
-    cities_list.append([randint(0, 1000), randint(0, 1000)])
+    cities_list.append([randint(0, 100), randint(0, 100)])
 
 distance_matrix = list()
 for i, city1 in enumerate(cities_list):
