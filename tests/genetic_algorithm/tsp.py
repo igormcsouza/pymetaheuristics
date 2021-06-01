@@ -1,12 +1,18 @@
-from random import randint, shuffle
+from random import shuffle
+
 from pymetaheuristics.utils.distances import euclidian_distance
+from pymetaheuristics.genetic_algorithm.steps import pmx_single_point
 from pymetaheuristics.genetic_algorithm.model import GeneticAlgorithm
 from pymetaheuristics.genetic_algorithm.types import Genome
 
 
-cities_list = list()
-for _ in range(5):
-    cities_list.append([randint(0, 100), randint(0, 100)])
+cities_list = [
+    [42.5, 48.9],
+    [97.2, 32.1],
+    [23.5, 85.9],
+    [32.8, 45.2],
+    [12.5, 69.9]
+]
 
 distance_matrix = list()
 for i, city1 in enumerate(cities_list):
@@ -35,6 +41,10 @@ model = GeneticAlgorithm(
     constraints=[]
 )
 
-result = model.train(5, 10)
+result = model.train(epochs=15, pop_size=10, crossover=pmx_single_point)
 
-print(result)
+print("Genetic Algorithm result", result, sep="\n")
+print("Ground Truth", ([2, 4, 3, 0, 1], 210.24), sep="\n")
+
+ans = (round(result[1], 2) - 210.24) / 210.24
+print(round(ans*100, 2), "%... off the optimal")
