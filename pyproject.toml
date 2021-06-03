@@ -3,6 +3,14 @@ name = "pymetaheuristics"
 version = "0.1.0"
 description = ""
 authors = ["Igor Souza <igormcsouza@gmail.com>"]
+keywords = ["metaheuristics", "python", "solver"]
+readme = "README.md"
+license = "MIT"
+homepage = "https://github.com/igormcsouza/pymetaheuristics"
+repository = "https://github.com/igormcsouza/pymetaheuristics"
+include = [
+    "LICENSE",
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"

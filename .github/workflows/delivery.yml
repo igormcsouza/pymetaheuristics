@@ -1,0 +1,20 @@
+name: Continuous Delivery
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Install pre-requisites
+        run: pip install poetry
+      - name: Install python requirements
+        run: poetry install
+      - name: Build package
+        run: poetry build
+      - name: Publish builded package
+        run: poetry publish
