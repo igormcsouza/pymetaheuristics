@@ -11,5 +11,19 @@ jobs:
         run: pip install poetry
       - name: Install python requirements
         run: poetry install
-      - name: Run unit test
-        run: poetry run pytest
+      - name: Run unit test and coverage
+        run: sh scripts/test.sh
+      - name: Update coveralls data
+        uses: AndreMiras/coveralls-python-action@develop
+        with:
+          parallel: true
+          flag-name: Unit Test
+
+  coveralls_finish:
+    needs: package
+    runs-on: ubuntu-latest
+    steps:
+    - name: Coveralls Finished
+      uses: AndreMiras/coveralls-python-action@develop
+      with:
+        parallel-finished: true
