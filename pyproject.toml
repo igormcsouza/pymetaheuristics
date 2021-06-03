@@ -22,7 +22,7 @@ pytest-cov = "^2.12.1"
 coverage = {extras = ["toml"], version = "^5.5"}
 
 [tool.coverage.run]
-relative_files = "True"
+relative_files = true
 
 [build-system]
 requires = ["poetry>=0.12"]
