@@ -1,4 +1,5 @@
-from pymetaheuristics.genetic_algorithm.steps import random_weighted_selection
+from pymetaheuristics.genetic_algorithm.steps.selections import (
+    random_weighted_selection)
 
 
 def test_genetic_algorithm_steps_selections_random_weighted_selection():

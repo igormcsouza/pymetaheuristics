@@ -1,7 +1,8 @@
 from random import shuffle
 
 from pymetaheuristics.utils.distances import euclidian_distance
-from pymetaheuristics.genetic_algorithm.steps import pmx_single_point
+from pymetaheuristics.genetic_algorithm.steps.crossovers import (
+    pmx_single_point)
 from pymetaheuristics.genetic_algorithm.model import GeneticAlgorithm
 from pymetaheuristics.genetic_algorithm.types import Genome
 
@@ -37,11 +38,11 @@ def fitness_function(genome: Genome) -> float:
 
 model = GeneticAlgorithm(
     fitness_function=fitness_function,
-    genome_generator=genome_generator,
-    constraints=[]
+    genome_generator=genome_generator
 )
 
-result = model.train(epochs=15, pop_size=10, crossover=pmx_single_point)
+result = model.train(
+    epochs=15, pop_size=10, crossover=pmx_single_point, verbose=True)
 
 print("Genetic Algorithm result", result, sep="\n")
 print("Ground Truth", ([2, 4, 3, 0, 1], 210.24), sep="\n")

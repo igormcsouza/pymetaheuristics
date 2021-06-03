@@ -1,4 +1,4 @@
-from pymetaheuristics.genetic_algorithm.steps import inter_mutation
+from pymetaheuristics.genetic_algorithm.steps.multations import inter_mutation
 
 
 def test_genetic_algorithm_steps_multations_inter_mutation():

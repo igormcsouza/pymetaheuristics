@@ -3,8 +3,11 @@ from typing import List, Tuple
 from pymetaheuristics.genetic_algorithm.types import (
     ConstraintFunction, CrossOverFunction, FitnessFunction, Genome,
     GenomeGeneratorFunction, MutationFunction, SelectionFunction)
-from pymetaheuristics.genetic_algorithm.steps import (
-    inter_mutation, random_weighted_selection, single_point_crossover)
+from pymetaheuristics.genetic_algorithm.steps.selections import (
+    random_weighted_selection)
+from pymetaheuristics.genetic_algorithm.steps.crossovers import (
+    single_point_crossover)
+from pymetaheuristics.genetic_algorithm.steps.multations import inter_mutation
 
 
 class GeneticAlgorithm():
@@ -44,28 +47,29 @@ class GeneticAlgorithm():
         population: List[Genome] = list()
         # Generate pop_size Genomes and append it to the population
         for _ in range(pop_size):
-            genome = self.genome_generator()
             accepted = False
+            genome = None
 
-            # If there are constraints, verify the genome respect it.
+            # Check if given genome is accepted on the contraints.
             while not accepted:
-                for constraint in self.constraints:
-                    accepted = constraint(genome)
+                genome = self.genome_generator()
+                accepted = self._check_constraints(genome)
 
-                    if not accepted:
-                        genome = self.genome_generator()
-                        break
-
-            population.append(genome)
+            if genome:
+                population.append(genome)
 
         return population
 
     def add_constraint(self, constraint: ConstraintFunction):
         """Genetic Contraint for a Gene."""
-        if self.constraints:
-            self.constraints.append(constraint)
-        else:
-            self.constraints = [constraint]
+        self.constraints.append(constraint)
+
+    def _check_constraints(self, genome: Genome):
+        for constraint_it in self.constraints:
+            if not constraint_it(genome):
+                return False
+
+        return True
 
     def train(
         self,
@@ -99,15 +103,24 @@ class GeneticAlgorithm():
         population = self._pop_generator(pop_size)
 
         for i in range(epochs):
-            # keep the 2 most fitted and repopulate with new ones
+            # keep the k most fitted and repopulate with new ones
             parents = selection(population, self.fitness_function, **kwargs)
             # Cross Over the parents to get a better solution
-            children = crossover(*parents)
+            children = crossover(*parents[:2], **kwargs)
             # Populate the next generation
-            population = [*parents, *children] + self._pop_generator(
-                pop_size=pop_size-len(population))
+            population = [*parents, *children]
+            population.extend(
+                self._pop_generator(pop_size=pop_size-len(population)))
             # Mutate the population
             population = [mutation(genome, **kwargs) for genome in population]
+            # Check if every genome is still accepted by contraints
+            for idx, genome in enumerate(population):
+                accepted = False
+                while not accepted:
+                    accepted = self._check_constraints(genome)
+                    if not accepted:
+                        genome = self.genome_generator()
+                population[idx] = genome
             # sort the population according to their fitness
             population.sort(key=lambda x: self.fitness_function(x))
             # print the partial results if verbose
