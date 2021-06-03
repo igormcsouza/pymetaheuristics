@@ -13,8 +13,6 @@ jobs:
         run: poetry install
       - name: Run unit test
         run: poetry run pytest
-      - name: Add support for coveralls
-        run: pip install coverage[toml]
       - name: Coveralls
         uses: AndreMiras/coveralls-python-action@develop
         with:
