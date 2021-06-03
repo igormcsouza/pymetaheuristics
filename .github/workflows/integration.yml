@@ -11,8 +11,13 @@ jobs:
         run: pip install poetry
       - name: Install python requirements
         run: poetry install
-      - name: Run unit test
-        run: poetry run pytest --cov=pymetaheuristics
+      - name: Run unit test and coverage
+        run: sh scripts/test.sh
+      - name: Update coveralls data
+        uses: AndreMiras/coveralls-python-action@develop
+        with:
+          parallel: true
+          flag-name: Unit Test
 
   coveralls_finish:
     needs: package
