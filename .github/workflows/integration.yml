@@ -13,6 +13,10 @@ jobs:
         run: poetry install
       - name: Run unit test
         run: poetry run pytest --cov=pymetaheuristics
+      - name: Force add coverage
+        run: poetry add -D coverage[toml]
+      - name: Run coverage
+        run: coverage html
       - name: Coveralls
         uses: AndreMiras/coveralls-python-action@develop
         with:
