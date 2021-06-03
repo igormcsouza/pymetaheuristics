@@ -3,6 +3,14 @@ name = "pymetaheuristics"
 version = "0.1.0"
 description = ""
 authors = ["Igor Souza <igormcsouza@gmail.com>"]
+keywords = ["metaheuristics", "python", "solver"]
+readme = "README.md"
+license = "MIT"
+homepage = "https://github.com/igormcsouza/pymetaheuristics"
+repository = "https://github.com/igormcsouza/pymetaheuristics"
+include = [
+    "LICENSE",
+]
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -10,6 +18,8 @@ python = "^3.8"
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
 flake8 = "^3.9"
+coverage = {extras = ["toml"], version = "^5.5"}
+pytest-cov = "^2.12.1"
 
 [build-system]
 requires = ["poetry>=0.12"]

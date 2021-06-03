@@ -1,0 +1,2 @@
+class CrossOverException(BaseException):
+    pass
