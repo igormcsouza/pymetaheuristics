@@ -1,4 +1,5 @@
 from typing import List, Tuple
+from time import time
 
 from pymetaheuristics.genetic_algorithm.types import (
     ConstraintFunction, CrossOverFunction, FitnessFunction, Genome,
@@ -45,6 +46,7 @@ class GeneticAlgorithm():
         self.fitness_function = fitness_function
         self.genome_generator = genome_generator
         self.constraints = constraints
+        self.history = {}
 
     def _pop_generator(self, pop_size: int) -> List[Genome]:
         """Generate a population of genomes."""
@@ -104,6 +106,18 @@ class GeneticAlgorithm():
         parameters that can be set as parameters on this function. The code
         will automatically deal with it.
         """
+        # initialize history stats
+        start = time()
+        self.history[start] = {
+            'runs': list(),
+            'args': {
+                "epochs": epochs, "pop_size": pop_size,
+                "selection": selection.__name__,
+                "crossover": crossover.__name__,
+                "mutation": mutation.__name__,
+                "verbose": verbose, "kwargs": kwargs
+            }
+        }
         # initialize the population for this round
         population = self._pop_generator(pop_size)
         best_result = (population[0]), self.fitness_function(population[0])
@@ -133,10 +147,17 @@ class GeneticAlgorithm():
             if verbose:
                 print("Epoch %i got fitness %.2f" % (
                     i, self.fitness_function(population[0])), population[0])
+            # save the partial run history
+            self.history[start]['runs'].append((
+                population[0], self.fitness_function(population[0])))
 
             if self.fitness_function(population[0]) < best_result[1]:
                 best_result = (
                     population[0], self.fitness_function(population[0]))
+
+        # save final results before quit
+        self.history[start]['best'] = best_result
+        self.history[start]['elapsed'] = time() - start
 
         # when done the epochs, return the most fit and its fitness score
         return best_result
