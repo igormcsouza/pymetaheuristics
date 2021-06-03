@@ -3,6 +3,7 @@ from typing import List
 
 
 def euclidian_distance(a: List[float], b: List[float]):
+    """Calculate a Euclidian distance between 2 tensors."""
     assert len(a) == len(b), "Length of tensor A has to be equal to tensor B."
 
     distances = list()
