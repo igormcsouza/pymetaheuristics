@@ -32,7 +32,7 @@ class GeneticAlgorithm():
     def __init__(
         self, fitness_function: FitnessFunction,
         genome_generator: GenomeGeneratorFunction,
-        constraints: List[ConstraintFunction] = None
+        constraints: List[ConstraintFunction] = [lambda x: True]
     ):
         self.fitness_function = fitness_function
         self.genome_generator = genome_generator
@@ -45,15 +45,16 @@ class GeneticAlgorithm():
         # Generate pop_size Genomes and append it to the population
         for _ in range(pop_size):
             genome = self.genome_generator()
+            accepted = False
 
-            # If the is constraints, verify the genome respect it.
-            if self.constraints:
-                accepted = False
-                while not accepted:
-                    for constraint in self.constraints:
-                        accepted = constraint(genome)
+            # If there are constraints, verify the genome respect it.
+            while not accepted:
+                for constraint in self.constraints:
+                    accepted = constraint(genome)
 
-                    genome = self.genome_generator()
+                    if not accepted:
+                        genome = self.genome_generator()
+                        break
 
             population.append(genome)
 
