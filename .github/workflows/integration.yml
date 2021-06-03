@@ -13,11 +13,14 @@ jobs:
         run: poetry install
       - name: Run unit test
         run: poetry run pytest
-
-  finish:
+  coverage:
     needs: package
     runs-on: ubuntu-latest
     steps:
+      - name: npm install, make test-coverage
+        run: |
+          npm install
+          make test-coverage
       - name: Coveralls Finished
         uses: coverallsapp/github-action@master
         with:
