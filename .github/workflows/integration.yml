@@ -12,7 +12,7 @@ jobs:
       - name: Install python requirements
         run: poetry install
       - name: Run unit test
-        run: poetry run pytest --cov=pymetaheuristics && coverage html
+        run: poetry run pytest --cov=pymetaheuristics
       - name: Coveralls
         uses: AndreMiras/coveralls-python-action@develop
         with:
