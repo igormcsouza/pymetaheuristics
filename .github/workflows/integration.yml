@@ -13,11 +13,6 @@ jobs:
         run: poetry install
       - name: Run unit test
         run: poetry run pytest --cov=pymetaheuristics
-      - name: Coveralls
-        uses: AndreMiras/coveralls-python-action@develop
-        with:
-          parallel: true
-          flag-name: Unit Test
 
   coveralls_finish:
     needs: package
