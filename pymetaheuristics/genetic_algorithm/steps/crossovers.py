@@ -5,7 +5,9 @@ from pymetaheuristics.genetic_algorithm.types import Genome
 from pymetaheuristics.genetic_algorithm.exceptions import CrossOverException
 
 
-def single_point_crossover(g1: Genome, g2: Genome) -> Tuple[Genome, Genome]:
+def single_point_crossover(
+    g1: Genome, g2: Genome, **kwargs
+) -> Tuple[Genome, Genome]:
     """Cut 2 Genomes on index p (randomly choosen) and swap its parts."""
     if len(g1) == len(g2):
         length = len(g1)
@@ -22,7 +24,9 @@ def single_point_crossover(g1: Genome, g2: Genome) -> Tuple[Genome, Genome]:
     return g1[0:p] + g2[p:length], g2[0:p] + g1[p:length]
 
 
-def pmx_single_point(g1: Genome, g2: Genome) -> Tuple[Genome, Genome]:
+def pmx_single_point(
+    g1: Genome, g2: Genome, **kwargs
+) -> Tuple[Genome, Genome]:
     """
     PMX is a crossover function which consider a Genome as a sequence of
     nom-repetitive genes through the Genome. So before swapping, checks if

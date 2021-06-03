@@ -106,7 +106,7 @@ class GeneticAlgorithm():
             # keep the k most fitted and repopulate with new ones
             parents = selection(population, self.fitness_function, **kwargs)
             # Cross Over the parents to get a better solution
-            children = crossover(*parents[:2])
+            children = crossover(*parents[:2], **kwargs)
             # Populate the next generation
             population = [*parents, *children]
             population.extend(
