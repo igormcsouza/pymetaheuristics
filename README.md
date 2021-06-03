@@ -4,6 +4,7 @@ Combinatorial Optimization problems with quickly good soving.
 
 [![Continuous Integration](https://github.com/igormcsouza/pymetaheuristics/actions/workflows/integration.yml/badge.svg)](https://github.com/igormcsouza/pymetaheuristics/actions/workflows/integration.yml)
 [![Coverage Status](https://coveralls.io/repos/github/igormcsouza/pymetaheuristics/badge.svg?branch=master)](https://coveralls.io/github/igormcsouza/pymetaheuristics?branch=master)
+[![PyPI version](https://badge.fury.io/py/pymetaheuristics.svg)](https://badge.fury.io/py/pymetaheuristics)
 
 
 ## Introduction
