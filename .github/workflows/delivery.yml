@@ -17,4 +17,4 @@ jobs:
       - name: Build package
         run: poetry build
       - name: Publish builded package
-        run: poetry publish
+        run: poetry publish -u ${{ secrets.USERNAME }} -p ${{ secrets.PASSWORD }}
