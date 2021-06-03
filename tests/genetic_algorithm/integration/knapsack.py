@@ -42,6 +42,10 @@ model = GeneticAlgorithm(
 
 model.add_constraint(maximun_capacity)
 
-result = model.train(50, 15, verbose=True)
+result = model.train(250, 35, k=20)
 
-print(result)
+print("Genetic Algorithm result", result, sep="\n")
+print("Ground Truth", ([0, 1, 1, 1, 0, 1, 0, 0], -14.7), sep="\n")
+
+ans = (14.7 - abs(round(result[1], 2))) / 14.7
+print(round(ans*100, 2), "%... off the optimal")

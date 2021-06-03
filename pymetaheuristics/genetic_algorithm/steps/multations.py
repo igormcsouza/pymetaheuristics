@@ -6,7 +6,8 @@ from pymetaheuristics.genetic_algorithm.types import Genome
 def inter_mutation(
     genome: Genome,
     q: int = 2,
-    probability: float = 0.75
+    probability: float = 0.75,
+    **kwargs
 ) -> Genome:
     """At a random chance, change interposition of q genes on the Genome."""
     for _ in range(q):

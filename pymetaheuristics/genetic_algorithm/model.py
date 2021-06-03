@@ -103,13 +103,14 @@ class GeneticAlgorithm():
         population = self._pop_generator(pop_size)
 
         for i in range(epochs):
-            # keep the 2 most fitted and repopulate with new ones
+            # keep the k most fitted and repopulate with new ones
             parents = selection(population, self.fitness_function, **kwargs)
             # Cross Over the parents to get a better solution
-            children = crossover(*parents)
+            children = crossover(*parents[:2])
             # Populate the next generation
-            population = [*parents, *children] + self._pop_generator(
-                pop_size=pop_size-len(population))
+            population = [*parents, *children]
+            population.extend(
+                self._pop_generator(pop_size=pop_size-len(population)))
             # Mutate the population
             population = [mutation(genome, **kwargs) for genome in population]
             # Check if every genome is still accepted by contraints
