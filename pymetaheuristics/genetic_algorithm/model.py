@@ -65,10 +65,7 @@ class GeneticAlgorithm():
 
     def add_constraint(self, constraint: ConstraintFunction):
         """Genetic Contraint for a Gene."""
-        if self.constraints:
-            self.constraints.append(constraint)
-        else:
-            self.constraints = [constraint]
+        self.constraints.append(constraint)
 
     def train(
         self,
