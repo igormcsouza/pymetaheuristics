@@ -16,6 +16,9 @@ cientist may focus on the problem modeling rather than the heuristic
 implementation. This package is an open source project so feel free to send
 your implementations and fixes so they may be helpful for others too.
 
+## Requires
+
+Only need **Python>=3.7**. For now, no additional packages will be used.
 
 ## Subpackages
 
