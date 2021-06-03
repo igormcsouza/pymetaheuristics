@@ -3,8 +3,11 @@ from typing import List, Tuple
 from pymetaheuristics.genetic_algorithm.types import (
     ConstraintFunction, CrossOverFunction, FitnessFunction, Genome,
     GenomeGeneratorFunction, MutationFunction, SelectionFunction)
-from pymetaheuristics.genetic_algorithm.steps import (
-    inter_mutation, random_weighted_selection, single_point_crossover)
+from pymetaheuristics.genetic_algorithm.steps.selections import (
+    random_weighted_selection)
+from pymetaheuristics.genetic_algorithm.steps.crossovers import (
+    single_point_crossover)
+from pymetaheuristics.genetic_algorithm.steps.multations import inter_mutation
 
 
 class GeneticAlgorithm():
