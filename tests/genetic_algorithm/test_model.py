@@ -42,7 +42,7 @@ def test_genetic_algorithm_model_add_constraint():
 
     ga_model.add_constraint(constraint=lambda x: 0 not in x)
 
-    result, score = ga_model.train(1, 10)
+    result, score = ga_model.train(1, 10, verbose=True)
 
     assert len(result) == 5
     assert sum(result) == score
