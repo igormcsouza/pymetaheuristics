@@ -113,13 +113,13 @@ class GeneticAlgorithm():
             # Mutate the population
             population = [mutation(genome, **kwargs) for genome in population]
             # Check if every genome is still accepted by contraints
-            for i, genome in enumerate(population):
+            for idx, genome in enumerate(population):
                 accepted = False
                 while not accepted:
                     accepted = self._check_constraints(genome)
                     if not accepted:
                         genome = self.genome_generator()
-                population[i] = genome
+                population[idx] = genome
             # sort the population according to their fitness
             population.sort(key=lambda x: self.fitness_function(x))
             # print the partial results if verbose
