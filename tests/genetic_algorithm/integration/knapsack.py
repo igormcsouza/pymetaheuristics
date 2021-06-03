@@ -42,7 +42,7 @@ model = GeneticAlgorithm(
 
 model.add_constraint(maximun_capacity)
 
-result = model.train(250, 35, k=20)
+result = model.train(30, 10, k=5, verbose=True)
 
 print("Genetic Algorithm result", result, sep="\n")
 print("Ground Truth", ([0, 1, 1, 1, 0, 1, 0, 0], -14.7), sep="\n")

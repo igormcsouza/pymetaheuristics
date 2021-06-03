@@ -16,6 +16,6 @@ def random_weighted_selection(
     """
     return choices(
         population=population,
-        weights=[fitness_function(genome) for genome in population],
+        weights=[-fitness_function(genome) for genome in population],
         k=k
     )

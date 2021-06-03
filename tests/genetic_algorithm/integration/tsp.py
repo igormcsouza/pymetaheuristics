@@ -42,7 +42,7 @@ model = GeneticAlgorithm(
 )
 
 result = model.train(
-    epochs=15, pop_size=10, crossover=pmx_single_point, verbose=True)
+    epochs=5, pop_size=10, crossover=pmx_single_point, verbose=True)
 
 print("Genetic Algorithm result", result, sep="\n")
 print("Ground Truth", ([2, 4, 3, 0, 1], 210.24), sep="\n")
