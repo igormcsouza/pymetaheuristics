@@ -6,7 +6,7 @@ jobs:
   package:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
       - name: Install pre-requisites
         run: pip install poetry
       - name: Install python requirements
