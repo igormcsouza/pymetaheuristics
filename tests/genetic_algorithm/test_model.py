@@ -1,3 +1,4 @@
+from pymetaheuristics.genetic_algorithm.exceptions import LoadHistoryException
 from pymetaheuristics.genetic_algorithm.types import GeneticAlgorithmHistory
 from random import randint
 
@@ -43,6 +44,8 @@ def test_genetic_algorithm_model_add_constraint():
 
     ga_model.add_constraint(constraint=lambda x: 0 not in x)
 
+    assert ga_model._check_constraints([1, 2, 3, 4, 6]) is True
+
     result, score = ga_model.train(1, 10, verbose=True)
 
     assert len(result) == 5
@@ -77,3 +80,27 @@ def test_genetic_algorithm_model_load_history():
     ga_model.load_history(history)
 
     assert len(ga_model.history.keys()) == 1
+
+
+def test_genetic_algorithm_model_load_history_failed():
+    ga_model = GeneticAlgorithm(
+        fitness_function=lambda x: sum(x),
+        genome_generator=lambda: [randint(0, 10) for _ in range(5)]
+    )
+
+    history1 = None
+    history2 = {"0": {"wrong": "args"}}
+
+    try:
+        ga_model.load_history(history1)  # type: ignore
+    except LoadHistoryException:
+        assert True
+    else:
+        assert False
+
+    try:
+        ga_model.load_history(history2)  # type: ignore
+    except LoadHistoryException:
+        assert True
+    else:
+        assert False

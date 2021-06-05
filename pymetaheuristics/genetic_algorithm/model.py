@@ -51,19 +51,32 @@ class GeneticAlgorithm():
         self.history: GeneticAlgorithmHistory = {}
 
     def load_history(self, history: GeneticAlgorithmHistory):
-        # check if the given history is on the right pattern
+        """check if the given history is on the right pattern."""
+        # are there keys on history?
+        try:
+            assert history is not None
+            assert len(history.keys()) > 0
+        except AssertionError as ae:
+            raise LoadHistoryException(
+                "The given history of has not the correct pattern. %s" % ae)
+        except Exception as e:
+            raise LoadHistoryException(
+                "An unexpected error occured. %s" % e)
+
         for keys in history.keys():
-            parameters = history[keys].keys()
-            arguments = history[keys]["args"].keys()  # type: ignore
+            # Get list of arguments
             try:
+                parameters = history[keys].keys()
+                # are there args?
+                assert "args" in parameters
+                arguments = history[keys]["args"].keys()  # type: ignore
                 # are there runs?
                 assert "runs" in parameters
                 # is there best?
                 assert "best" in parameters
                 # is there elapsed?
                 assert "elapsed" in parameters
-                # are there args?
-                assert "args" in parameters
+
                 assert "epochs" in arguments
                 assert "pop_size" in arguments
                 assert "selection" in arguments
