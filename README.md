@@ -4,6 +4,7 @@ Combinatorial Optimization problems with quickly good soving.
 
 [![Continuous Integration](https://github.com/igormcsouza/pymetaheuristics/actions/workflows/integration.yml/badge.svg)](https://github.com/igormcsouza/pymetaheuristics/actions/workflows/integration.yml)
 [![Coverage Status](https://coveralls.io/repos/github/igormcsouza/pymetaheuristics/badge.svg?branch=master)](https://coveralls.io/github/igormcsouza/pymetaheuristics?branch=master)
+[![PyPI version](https://badge.fury.io/py/pymetaheuristics.svg)](https://badge.fury.io/py/pymetaheuristics)
 
 
 ## Introduction
@@ -15,6 +16,9 @@ cientist may focus on the problem modeling rather than the heuristic
 implementation. This package is an open source project so feel free to send
 your implementations and fixes so they may be helpful for others too.
 
+## Requires
+
+Only need **Python>=3.7**. For now, no additional packages will be used.
 
 ## Subpackages
 
