@@ -2,13 +2,15 @@ from typing import List, Tuple
 from time import time
 
 from pymetaheuristics.genetic_algorithm.types import (
-    ConstraintFunction, CrossOverFunction, FitnessFunction, Genome,
-    GenomeGeneratorFunction, MutationFunction, SelectionFunction)
+    ConstraintFunction, CrossOverFunction, FitnessFunction,
+    GeneticAlgorithmHistory, Genome, GenomeGeneratorFunction, MutationFunction,
+    SelectionFunction)
 from pymetaheuristics.genetic_algorithm.steps.selections import (
     random_weighted_selection)
 from pymetaheuristics.genetic_algorithm.steps.crossovers import (
     single_point_crossover)
 from pymetaheuristics.genetic_algorithm.steps.multations import inter_mutation
+from pymetaheuristics.genetic_algorithm.exceptions import LoadHistoryException
 
 
 class GeneticAlgorithm():
@@ -46,7 +48,39 @@ class GeneticAlgorithm():
         self.fitness_function = fitness_function
         self.genome_generator = genome_generator
         self.constraints = constraints
-        self.history = {}
+        self.history: GeneticAlgorithmHistory = {}
+
+    def load_history(self, history: GeneticAlgorithmHistory):
+        # check if the given history is on the right pattern
+        for keys in history.keys():
+            parameters = history[keys].keys()
+            arguments = history[keys]["args"].keys()  # type: ignore
+            try:
+                # are there runs?
+                assert "runs" in parameters
+                # is there best?
+                assert "best" in parameters
+                # is there elapsed?
+                assert "elapsed" in parameters
+                # are there args?
+                assert "args" in parameters
+                assert "epochs" in arguments
+                assert "pop_size" in arguments
+                assert "selection" in arguments
+                assert "crossover" in arguments
+                assert "mutation" in arguments
+                assert "verbose" in arguments
+                assert "kwargs" in arguments
+            except AssertionError as ae:
+                raise LoadHistoryException(
+                    "The given history of %s has not the correct pattern. %s"
+                    % (keys, ae))
+            except Exception as e:
+                raise LoadHistoryException(
+                    "An unexpected error occured. %s" % e)
+
+        # If everything is ok, update the history
+        self.history.update(history)
 
     def _pop_generator(self, pop_size: int) -> List[Genome]:
         """Generate a population of genomes."""
@@ -109,8 +143,10 @@ class GeneticAlgorithm():
         # initialize history stats
         start = time()
         self.history[start] = {
-            'runs': list(),
-            'args': {
+            "runs": list(),
+            "best": tuple(),
+            "elapsed": 0,
+            "args": {
                 "epochs": epochs, "pop_size": pop_size,
                 "selection": selection.__name__,
                 "crossover": crossover.__name__,
@@ -148,7 +184,7 @@ class GeneticAlgorithm():
                 print("Epoch %i got fitness %.2f" % (
                     i, self.fitness_function(population[0])), population[0])
             # save the partial run history
-            self.history[start]['runs'].append((
+            self.history[start]['runs'].append((  # type: ignore
                 population[0], self.fitness_function(population[0])))
 
             if self.fitness_function(population[0]) < best_result[1]:

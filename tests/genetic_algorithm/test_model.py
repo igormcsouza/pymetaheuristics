@@ -1,3 +1,4 @@
+from pymetaheuristics.genetic_algorithm.types import GeneticAlgorithmHistory
 from random import randint
 
 from pymetaheuristics.genetic_algorithm.model import GeneticAlgorithm
@@ -48,3 +49,31 @@ def test_genetic_algorithm_model_add_constraint():
     assert sum(result) == score
     assert 5 not in result
     assert 0 not in result
+
+
+def test_genetic_algorithm_model_load_history():
+    ga_model = GeneticAlgorithm(
+        fitness_function=lambda x: sum(x),
+        genome_generator=lambda: [randint(0, 10) for _ in range(5)]
+    )
+
+    history: GeneticAlgorithmHistory = {
+        0: {
+            "runs": [([0, 1, 2], 3.0)],
+            "best": ([0, 1, 2], 3.0),
+            "elapsed": 0.00001,
+            "args": {
+                "epochs": 1,
+                "pop_size": 10,
+                "selection": "selection_method",
+                "crossover": "crossover_method",
+                "mutation": "mutation_method",
+                "verbose": True,
+                "kwargs": {"k": 2}
+            }
+        }
+    }
+
+    ga_model.load_history(history)
+
+    assert len(ga_model.history.keys()) == 1
