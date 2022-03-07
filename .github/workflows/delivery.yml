@@ -1,9 +1,9 @@
-name: Continuous Delivery
+name: Publish on PyPi
 
 on:
   pull_request:
     branches:
-      - master
+      - main
 
 jobs:
   package:
