@@ -70,3 +70,8 @@ Your code and help is very appreciate! Please, send your issue and pr's
 whenever is good for you! If needed, send an 
 [email](mailto:igormcsouza@gmail.com) to me I'll be very glad to help. Let's 
 build up together.
+## Operator ownership
+
+Selection, crossover and mutation operators never modify their inputs: they
+return new genomes (`new = mutate(genome)`), so callers may keep using the
+originals safely.

@@ -1,3 +1,8 @@
+"""Selection operators.
+
+Ownership: operators never modify the population; the returned Genomes are
+copies, not aliases of the population members.
+"""
 from random import Random
 from typing import Optional
 
@@ -19,8 +24,9 @@ def random_weighted_selection(
     """
     fitness = [fitness_function(genome) for genome in population]
     # minimization: lower fitness => higher weight; shift keeps weights > 0
-    return make_rng(rng).choices(
+    selected = make_rng(rng).choices(
         population=population,
         weights=[max(fitness) - f + 1 for f in fitness],
         k=k
     )
+    return [genome[:] for genome in selected]

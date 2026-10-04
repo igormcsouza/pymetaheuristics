@@ -1,3 +1,8 @@
+"""Crossover operators.
+
+Ownership: operators never modify their inputs; the returned Genomes are
+always new objects (never aliases of the parents).
+"""
 from random import Random
 from typing import Optional, Tuple
 
@@ -18,7 +23,7 @@ def single_point_crossover(
                 len(g1), len(g2)))
 
     if length < 2:
-        return g1, g2
+        return g1[:], g2[:]
 
     p = make_rng(rng).randint(1, length - 1)
 
@@ -47,7 +52,7 @@ def pmx_single_point(
                 len(g1), len(g2)))
 
     if length < 2:
-        return g1, g2
+        return g1[:], g2[:]
 
     p = make_rng(rng).randint(1, length - 1)
 

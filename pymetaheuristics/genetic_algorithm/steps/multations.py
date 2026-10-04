@@ -1,3 +1,7 @@
+"""Mutation operators.
+
+Ownership: operators never modify their input; they return a new Genome.
+"""
 from random import Random
 from typing import Optional
 
@@ -12,8 +16,12 @@ def inter_mutation(
     rng: Optional[Random] = None,
     **kwargs
 ) -> Genome:
-    """At a random chance, change interposition of q genes on the Genome."""
+    """At a random chance, change interposition of q genes on the Genome.
+
+    The input is not modified, a (possibly identical) copy is returned.
+    """
     rng = make_rng(rng)
+    genome = genome[:]
     for _ in range(q):
         index = rng.randrange(len(genome))
 
