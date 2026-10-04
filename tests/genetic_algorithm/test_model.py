@@ -101,19 +101,11 @@ def test_genetic_algorithm_model_load_history_failed():
     history1 = None
     history2 = {"0": {"wrong": "args"}}
 
-    try:
+    with pytest.raises(LoadHistoryException):
         ga_model.load_history(history1)  # type: ignore
-    except LoadHistoryException:
-        assert True
-    else:
-        assert False
 
-    try:
+    with pytest.raises(LoadHistoryException):
         ga_model.load_history(history2)  # type: ignore
-    except LoadHistoryException:
-        assert True
-    else:
-        assert False
 
 
 def _seeded_run(seed):
