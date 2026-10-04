@@ -9,15 +9,14 @@ Every genome that is evaluated (and so can become the best) is feasible.
 """
 from random import Random
 from statistics import fmean
-from time import perf_counter
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from pymetaheuristics.core.direction import better, oriented
-from pymetaheuristics.core.evaluation import counting
 from pymetaheuristics.core.feasibility import InfeasibleError, reject
 from pymetaheuristics.core.problem import Direction, Problem
+from pymetaheuristics.core.loop import run
 from pymetaheuristics.core.result import OptimizationResult
-from pymetaheuristics.core.termination import State, Stop
+from pymetaheuristics.core.termination import Stop
 from pymetaheuristics.genetic_algorithm.steps.crossovers import (
     single_point_crossover)
 from pymetaheuristics.genetic_algorithm.steps.mutations import inter_mutation
@@ -68,31 +67,21 @@ def genetic_algorithm(
     ``best``/``solution`` are that generation's best; ``best_so_far`` is
     the best value seen up to and including that generation (the same
     measure as SA's float history). With elitism the two values coincide.
-    ``metadata`` holds ``evaluations`` (objective calls) and
-    ``termination``, the ``State`` that satisfied ``stop``.
+    ``metadata`` holds ``evaluations`` (objective calls), ``termination``
+    ('stop') and ``state`` (the final ``State``), as for every heuristic
+    built on ``core.run``.
 
     ``problem.generate`` is called without an rng; seed its random source
     yourself for fully reproducible runs.
     """
     rng = make_rng(rng)
-    problem, evaluations = counting(problem)
-    generate = reject(problem.generate, problem.feasible, max_tries)
-    start = perf_counter()
 
-    population = [generate() for _ in range(population_size)]
-    values = [problem.evaluate(genome) for genome in population]
-    record = _record(population, values, problem.direction)
-    best, best_value = record['solution'], record['best']
-    record['best_so_far'] = best_value
-    history = [record]
-    generation = 0
+    def init(problem):
+        population = [generate() for _ in range(population_size)]
+        return _evaluated(problem, population, None, None)
 
-    while True:
-        state = State(
-            generation, evaluations(), perf_counter() - start, best_value)
-        if stop(state):
-            break
-        # TODO(#49): migrate to core.loop.run
+    def step(problem, carry):
+        population, values, best, best_value = carry
         offspring = _breed(
             problem, population, values, selection, crossover,
             population_size, rng, operator_kwargs)
@@ -101,20 +90,29 @@ def genetic_algorithm(
             operator_kwargs)
         population = _ensure_feasible(
             offspring, problem.feasible, repair, generate)
-        values = [problem.evaluate(genome) for genome in population]
-        population, values = _keep_elite(
-            population, values, best, best_value, problem.direction)
-        record = _record(population, values, problem.direction)
-        if better(record['best'], best_value, problem.direction):
-            best, best_value = record['solution'], record['best']
-        record['best_so_far'] = best_value
-        history.append(record)
-        generation += 1
+        return _evaluated(problem, population, best, best_value)
 
-    return OptimizationResult(
-        best, best_value, history=history, iterations=generation,
-        elapsed=state.elapsed,
-        metadata={'evaluations': state.evaluations, 'termination': state})
+    generate = reject(problem.generate, problem.feasible, max_tries)
+    return run(problem, stop=stop, init=init, step=step)
+
+
+def _evaluated(
+    problem: Problem, population: Population, best: Optional[Genome],
+    best_value: Optional[float]
+) -> Tuple[Any, Genome, float, Dict[str, Any]]:
+    """Evaluate, apply elitism and record one generation, as a ``run``
+    outcome; ``best`` is None for the initial population."""
+    direction = problem.direction
+    values = [problem.evaluate(genome) for genome in population]
+    if best is not None:
+        population, values = _keep_elite(
+            population, values, best, best_value, direction)
+    record = _record(population, values, direction)
+    if best is None or better(record['best'], best_value, direction):
+        best, best_value = record['solution'], record['best']
+    record['best_so_far'] = best_value
+    return ((population, values, best, best_value), record['solution'],
+            record['best'], record)
 
 
 def _select(

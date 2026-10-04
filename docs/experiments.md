@@ -117,8 +117,9 @@ The library has no float operators, so `gaussian_neighbor` lives in
   evaluation (selection runs once per parent pair, plus crossover and
   feasibility bookkeeping), SA the fastest.
 
-## Known inconsistency
+## Termination metadata
 
-`metadata['termination']` is the `State` that met `stop` in the GA but the
-string `'stop'` in SA. The runner normalizes both to `'stop'` (see the
-`termination` column of `runs.csv`); library semantics are unchanged here.
+All three heuristics run on `core.run`, so `metadata['termination']` is
+`'stop'` and `metadata['state']` the final `State` for each (the GA used to
+store the `State` itself; the runner no longer normalizes it). The
+`termination` column of `runs.csv` is copied as is.

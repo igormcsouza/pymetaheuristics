@@ -16,9 +16,8 @@ from statistics import fmean, pstdev
 from time import perf_counter
 
 from pymetaheuristics.benchmarks import all_benchmarks, gap
-from pymetaheuristics.core import (
-    OptimizationResult, State, better, counting, max_evaluations, oriented,
-    reject)
+from pymetaheuristics import core
+from pymetaheuristics.core import better, max_evaluations, oriented, reject
 from pymetaheuristics.genetic_algorithm import genetic_algorithm
 from pymetaheuristics.genetic_algorithm.steps.crossovers import (
     pmx_single_point, single_point_crossover)
@@ -54,24 +53,13 @@ def as_mutation(move):
 
 def random_search(problem, *, stop, rng=None):
     """Baseline: evaluate fresh feasible solutions until ``stop``."""
-    problem, evaluations = counting(problem)
     generate = reject(problem.generate, problem.feasible)
-    start = perf_counter()
-    best = generate()
-    best_value = problem.evaluate(best)
-    history, iteration = [best_value], 0
-    while not stop(State(iteration, evaluations(), perf_counter() - start,
-                         best_value)):
+
+    def sample(problem, carry=None):
         candidate = generate()
-        value = problem.evaluate(candidate)
-        if better(value, best_value, problem.direction):
-            best, best_value = candidate, value
-        iteration += 1
-        history.append(best_value)
-    return OptimizationResult(
-        best, best_value, history=history, iterations=iteration,
-        elapsed=perf_counter() - start,
-        metadata={'evaluations': evaluations(), 'termination': 'stop'})
+        return None, candidate, problem.evaluate(candidate), None
+
+    return core.run(problem, stop=stop, init=sample, step=sample)
 
 
 # --- configurations ---------------------------------------------------------
@@ -144,10 +132,6 @@ def run_one(benchmark, name, heuristic, seed, budget):
     result = heuristic(replace(problem, evaluate=evaluate),
                        stop=max_evaluations(budget), rng=seed)
     wall_time = perf_counter() - start
-    # GA stores the State that met `stop`, SA a string: normalize both
-    termination = result.metadata.get('termination')
-    if isinstance(termination, State):
-        termination = 'stop'
     final_gap = gap(benchmark, result.best_value)
     steps = [budget * (i + 1) // CHECKPOINTS for i in range(CHECKPOINTS)]
     return {
@@ -155,7 +139,8 @@ def run_one(benchmark, name, heuristic, seed, budget):
         'heuristic': name, 'seed': seed, 'best_value': result.best_value,
         'gap': final_gap, 'success': final_gap <= SUCCESS_GAP,
         'evaluations': len(trace), 'iterations': result.iterations,
-        'wall_time': wall_time, 'termination': termination,
+        'wall_time': wall_time,
+        'termination': result.metadata['termination'],
         'curve': [gap(benchmark, trace[min(s, len(trace)) - 1])
                   for s in steps],
         'curve_evaluations': steps,
