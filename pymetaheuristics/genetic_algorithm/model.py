@@ -1,5 +1,4 @@
-from typing import List, Optional, Tuple, Union
-from random import Random
+from typing import List, Tuple
 from time import time
 
 from pymetaheuristics.genetic_algorithm.types import (
@@ -12,7 +11,6 @@ from pymetaheuristics.genetic_algorithm.steps.crossovers import (
     single_point_crossover)
 from pymetaheuristics.genetic_algorithm.steps.multations import inter_mutation
 from pymetaheuristics.genetic_algorithm.exceptions import LoadHistoryException
-from pymetaheuristics.utils.rng import make_rng
 
 
 class GeneticAlgorithm():
@@ -135,7 +133,6 @@ class GeneticAlgorithm():
         crossover: CrossOverFunction = single_point_crossover,
         mutation: MutationFunction = inter_mutation,
         verbose: bool = False,
-        rng: Optional[Union[Random, int]] = None,
         **kwargs
     ) -> Tuple[Genome, float]:
         """Loop over evolutionary steps until get to a limit.
@@ -150,14 +147,12 @@ class GeneticAlgorithm():
         :selection: Selection funtion to be used (See Steps Module)
         :crossover: Crossover funtion to be used (See Steps Module)
         :multation: Multation funtion to be used (See Steps Module)
-        :rng: A random.Random or an int seed, for reproducible runs.
 
         Optional Parameters:
         Depending on the function one choses, it might come with optional
         parameters that can be set as parameters on this function. The code
         will automatically deal with it.
         """
-        rng = make_rng(rng)
         # initialize history stats
         start = time()
         self.history[start] = {
@@ -178,17 +173,15 @@ class GeneticAlgorithm():
 
         for i in range(epochs):
             # keep the k most fitted and repopulate with new ones
-            parents = selection(
-                population, self.fitness_function, rng=rng, **kwargs)
+            parents = selection(population, self.fitness_function, **kwargs)
             # Cross Over the parents to get a better solution
-            children = crossover(*parents[:2], rng=rng, **kwargs)
+            children = crossover(*parents[:2], **kwargs)
             # Populate the next generation
             population = [*parents, *children]
             population.extend(
                 self._pop_generator(pop_size=pop_size-len(population)))
             # Mutate the population
-            population = [
-                mutation(genome, rng=rng, **kwargs) for genome in population]
+            population = [mutation(genome, **kwargs) for genome in population]
             # Check if every genome is still accepted by contraints
             for idx, genome in enumerate(population):
                 accepted = False

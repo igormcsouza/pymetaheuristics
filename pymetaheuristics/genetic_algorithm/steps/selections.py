@@ -1,16 +1,18 @@
-from random import Random
-from typing import Optional
+"""Selection operators.
+
+Ownership: operators never modify the population; the returned Genomes are
+copies, not aliases of the population members.
+"""
+from random import choices
 
 from pymetaheuristics.genetic_algorithm.types import (
     FitnessFunction, Population)
-from pymetaheuristics.utils.rng import make_rng
 
 
 def random_weighted_selection(
     population: Population,
     fitness_function: FitnessFunction,
     k: int = 2,
-    rng: Optional[Random] = None,
     **kwargs
 ) -> Population:
     """Selects randomly k genomes on a population. This approach considers the
@@ -19,8 +21,9 @@ def random_weighted_selection(
     """
     fitness = [fitness_function(genome) for genome in population]
     # minimization: lower fitness => higher weight; shift keeps weights > 0
-    return make_rng(rng).choices(
+    selected = choices(
         population=population,
         weights=[max(fitness) - f + 1 for f in fitness],
         k=k
     )
+    return [genome[:] for genome in selected]
