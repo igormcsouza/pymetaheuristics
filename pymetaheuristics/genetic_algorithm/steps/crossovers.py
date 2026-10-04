@@ -1,17 +1,13 @@
-"""Crossover operators.
-
-Ownership: operators never modify their inputs; the returned Genomes are
-always new objects (never aliases of the parents).
-"""
-from random import randint
-from typing import Tuple
+from random import Random
+from typing import Optional, Tuple
 
 from pymetaheuristics.genetic_algorithm.types import Genome
 from pymetaheuristics.genetic_algorithm.exceptions import CrossOverException
+from pymetaheuristics.utils.rng import make_rng
 
 
 def single_point_crossover(
-    g1: Genome, g2: Genome, **kwargs
+    g1: Genome, g2: Genome, rng: Optional[Random] = None, **kwargs
 ) -> Tuple[Genome, Genome]:
     """Cut 2 Genomes on index p (randomly choosen) and swap its parts."""
     if len(g1) == len(g2):
@@ -22,15 +18,15 @@ def single_point_crossover(
                 len(g1), len(g2)))
 
     if length < 2:
-        return g1[:], g2[:]
+        return g1, g2
 
-    p = randint(1, length - 1)
+    p = make_rng(rng).randint(1, length - 1)
 
     return g1[0:p] + g2[p:length], g2[0:p] + g1[p:length]
 
 
 def pmx_single_point(
-    g1: Genome, g2: Genome, **kwargs
+    g1: Genome, g2: Genome, rng: Optional[Random] = None, **kwargs
 ) -> Tuple[Genome, Genome]:
     """
     PMX is a crossover function which consider a Genome as a sequence of
@@ -51,9 +47,9 @@ def pmx_single_point(
                 len(g1), len(g2)))
 
     if length < 2:
-        return g1[:], g2[:]
+        return g1, g2
 
-    p = randint(1, length - 1)
+    p = make_rng(rng).randint(1, length - 1)
 
     g1child = g1[:]
     for i in range(p):
