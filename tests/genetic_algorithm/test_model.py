@@ -2,7 +2,17 @@ from pymetaheuristics.genetic_algorithm.exceptions import LoadHistoryException
 from pymetaheuristics.genetic_algorithm.types import GeneticAlgorithmHistory
 from random import Random, randint
 
+import pytest
+
 from pymetaheuristics.genetic_algorithm.model import GeneticAlgorithm
+
+# deprecated on purpose; one dedicated test checks the warning
+pytestmark = pytest.mark.filterwarnings("ignore::DeprecationWarning")
+
+
+def test_genetic_algorithm_model_warns_deprecated():
+    with pytest.warns(DeprecationWarning, match="issue #50"):
+        GeneticAlgorithm(sum, lambda: [1])
 
 
 def test_genetic_algorithm_model_instantiate():
@@ -120,7 +130,6 @@ def test_genetic_algorithm_same_seed_same_result():
 
 
 def test_genetic_algorithm_unsatisfiable_constraint_raises():
-    import pytest
     from pymetaheuristics.core import InfeasibleError
     ga_model = GeneticAlgorithm(
         fitness_function=sum, genome_generator=lambda: [1],
@@ -139,7 +148,6 @@ def test_genetic_algorithm_keeps_parent_when_mutation_infeasible():
 
 
 def test_genetic_algorithm_model_load_history_unexpected_error():
-    import pytest
     ga_model = GeneticAlgorithm(
         fitness_function=sum, genome_generator=lambda: [1])
     for history in ([1], {0: 1}):  # no .keys() / entry without .keys()
