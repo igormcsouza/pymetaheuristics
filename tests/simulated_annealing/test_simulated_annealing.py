@@ -102,3 +102,10 @@ def test_neighborhoods_do_not_mutate():
 def test_cooling():
     assert geometric_cooling(0.5)(8) == 4
     assert linear_cooling(3)(8) == 5 and linear_cooling(3)(2) == 0
+
+
+def test_neighborhoods_shim_reexports_shared_module():
+    from pymetaheuristics import neighborhoods
+    from pymetaheuristics.simulated_annealing import neighborhoods as shim
+
+    assert shim.swap_neighbor is neighborhoods.swap_neighbor

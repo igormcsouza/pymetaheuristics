@@ -61,6 +61,7 @@ Only data and small functions, all in `core`:
 
 Operators that are reusable across families (e.g. a swap neighbor used by
 both a GA mutation and an SA move) live as plain functions in a shared module
+(`pymetaheuristics/neighborhoods.py`)
 and are passed in as keyword arguments. Operators never mutate their inputs.
 
 ## 3. What belongs to an algorithm vs the core engine?

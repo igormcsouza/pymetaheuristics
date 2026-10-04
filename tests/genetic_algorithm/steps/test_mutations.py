@@ -16,14 +16,11 @@ def test_genetic_algorithm_steps_mutations_inter_mutation():
 
 
 def test_legacy_names_still_work():
-    from pymetaheuristics.utils.distances import (
-        euclidean_distance, euclidian_distance)
 
     with pytest.warns(DeprecationWarning, match="steps.mutations"):
         multations = importlib.import_module(
             "pymetaheuristics.genetic_algorithm.steps.multations")
     assert multations.inter_mutation is inter_mutation
-    assert euclidian_distance is euclidean_distance
     genome = [0, 1, 2, 3]
     with pytest.warns(DeprecationWarning, match="num_swaps"):
         mutated = inter_mutation(genome, q=3, probability=1.0)

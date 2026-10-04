@@ -1,17 +1,15 @@
-from math import sqrt
+import warnings
+from math import dist
 from typing import List
 
 
-def euclidean_distance(a: List[float], b: List[float]):
-    """Calculate a Euclidean distance between 2 tensors."""
-    assert len(a) == len(b), "Length of tensor a has to be equal to tensor b."
-
-    distances = list()
-    for a_coord, b_coord in zip(a, b):
-        distances.append((a_coord - b_coord) ** 2)
-
-    return sqrt(sum(distances))
+def euclidean_distance(a: List[float], b: List[float]) -> float:
+    """Euclidean distance between 2 points (ValueError on length mismatch)."""
+    return dist(a, b)
 
 
-# ponytail: deprecated misspelled alias, remove in 0.3
-euclidian_distance = euclidean_distance
+# ponytail: deprecated misspelled alias, remove in 0.3 (issue #50)
+def euclidian_distance(a: List[float], b: List[float]) -> float:
+    warnings.warn("euclidian_distance is deprecated, use euclidean_distance",
+                  DeprecationWarning, stacklevel=2)
+    return dist(a, b)
