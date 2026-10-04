@@ -21,6 +21,9 @@ dependencies = []
 
 [dependency-groups]
 dev = ["pytest", "pytest-cov", "ruff", "pre-commit"]
+experiments = [
+    "matplotlib>=3.11.2",
+]
 
 [project.urls]
 Homepage = "https://github.com/igormcsouza/pymetaheuristics"
