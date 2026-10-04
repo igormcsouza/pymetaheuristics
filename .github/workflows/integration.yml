@@ -5,20 +5,25 @@ on: [push, pull_request]
 jobs:
   package:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.9", "3.12"]
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: "3.12"
+          python-version: ${{ matrix.python-version }}
       - name: Install python requirements
         run: pip install -e .[dev]
+      - name: Lint
+        run: ruff check .
       - name: Run unit test and coverage
         run: sh scripts/test.sh
       - name: Update coveralls data
         uses: AndreMiras/coveralls-python-action@develop
         with:
           parallel: true
-          flag-name: Unit Test
+          flag-name: Unit Test ${{ matrix.python-version }}
 
   coveralls_finish:
     needs: package
