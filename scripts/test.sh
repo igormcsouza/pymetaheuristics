@@ -1,1 +1,1 @@
-pytest --cov=pymetaheuristics
+uv run pytest --cov=pymetaheuristics

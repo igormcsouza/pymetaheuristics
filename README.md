@@ -36,8 +36,9 @@ First install the package (available on pypi)
 ```bash
 $ pip install pymetaheuristics
 ```
-Requires Python 3.9+. For development: `pip install -e .[dev]`, then `pre-commit install`.
-Lint with `ruff check .` and test with `sh scripts/test.sh`.
+Requires Python 3.12+. For development use [uv](https://docs.astral.sh/uv/):
+`uv sync`, then `uv run pre-commit install`.
+Lint with `uv run ruff check .` and test with `sh scripts/test.sh`.
 
 Import the algorithm model you want to use to solve you problem. Implement the
 needed functions and pass to the model. Train and get the results.
