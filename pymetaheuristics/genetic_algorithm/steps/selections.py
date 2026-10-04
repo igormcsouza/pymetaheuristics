@@ -31,7 +31,7 @@ def random_weighted_selection(
     # lower => higher weight; shift keeps weights > 0
     selected = make_rng(rng).choices(
         population=population,
-        weights=[max(fitness) - f + 1 for f in fitness],
+        weights=[max(fitness) - value + 1 for value in fitness],
         k=k
     )
     return [genome[:] for genome in selected]

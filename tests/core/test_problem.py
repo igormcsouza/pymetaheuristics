@@ -4,7 +4,7 @@ from dataclasses import FrozenInstanceError
 import pytest
 
 from pymetaheuristics.core import Direction, Problem
-from pymetaheuristics.utils.distances import euclidian_distance
+from pymetaheuristics.utils.distances import euclidean_distance
 
 
 def test_defaults():
@@ -37,7 +37,7 @@ def tsp_problem():
 
     def evaluate(tour):
         legs = zip(tour, tour[1:] + tour[:1])
-        return sum(euclidian_distance(cities[a], cities[b])
+        return sum(euclidean_distance(cities[a], cities[b])
                    for a, b in legs)
 
     return Problem(

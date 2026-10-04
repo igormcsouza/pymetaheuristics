@@ -13,7 +13,7 @@ from pymetaheuristics.genetic_algorithm.steps.selections import (
     random_weighted_selection)
 from pymetaheuristics.genetic_algorithm.steps.crossovers import (
     single_point_crossover)
-from pymetaheuristics.genetic_algorithm.steps.multations import inter_mutation
+from pymetaheuristics.genetic_algorithm.steps.mutations import inter_mutation
 from pymetaheuristics.genetic_algorithm.exceptions import LoadHistoryException
 
 
@@ -32,7 +32,7 @@ class GeneticAlgorithm():
         A Fitness Function (Score to Rank the Genome)
         A Selection Method (Ways to choose between Genomes)
         A Crossover Method (Ways to shuffle Genomes)
-        A Multation Method (Ways to change small pieces of a Genome)
+        A Mutation Method (Ways to change small pieces of a Genome)
 
     On the Step Module you can find some functions to help on those matters,
     and may fit perfectly on you problem, or maybe one might need to implement
@@ -140,7 +140,7 @@ class GeneticAlgorithm():
         :pop_size: Number of Genomes (Genetic Representation of a solution)
         :selection: Selection funtion to be used (See Steps Module)
         :crossover: Crossover funtion to be used (See Steps Module)
-        :multation: Multation funtion to be used (See Steps Module)
+        :multation: Mutation funtion to be used (See Steps Module)
         :rng: A random.Random or an int seed, for reproducible runs.
 
         Optional Parameters:

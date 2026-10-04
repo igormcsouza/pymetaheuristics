@@ -19,7 +19,7 @@ from pymetaheuristics.core.result import OptimizationResult
 from pymetaheuristics.core.termination import State, Stop
 from pymetaheuristics.genetic_algorithm.steps.crossovers import (
     single_point_crossover)
-from pymetaheuristics.genetic_algorithm.steps.multations import inter_mutation
+from pymetaheuristics.genetic_algorithm.steps.mutations import inter_mutation
 from pymetaheuristics.genetic_algorithm.steps.selections import (
     random_weighted_selection)
 from pymetaheuristics.genetic_algorithm.types import (
