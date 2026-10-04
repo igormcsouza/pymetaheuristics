@@ -74,8 +74,10 @@ def test_result_contents():
         'best', 'mean', 'worst', 'solution', 'best_so_far'}
     # one evaluation per genome per generation, selection uses the cache
     assert result.metadata['evaluations'] == calls == 6 * 8
-    state = result.metadata['termination']
+    assert result.metadata['termination'] == 'stop'
+    state = result.metadata['state']
     assert isinstance(state, State) and state.iteration == 5
+    assert state.evaluations == calls
     assert result.elapsed == state.elapsed >= 0
 
 
@@ -91,6 +93,15 @@ def test_stop_conditions():
         rng=0, population_size=20)
     assert by_target.best_value <= 5
     assert by_target.iterations < 500
+
+    # the State carries the problem's direction (it used to default to
+    # MINIMIZE, so this stopped before the first generation)
+    maximize = genetic_algorithm(
+        make_problem(Direction.MAXIMIZE),
+        stop=any_of(max_iterations(500), target_value(50)),
+        rng=0, population_size=20)
+    assert maximize.best_value >= 50
+    assert 0 < maximize.iterations < 500
 
     immediate = genetic_algorithm(
         make_problem(), stop=max_iterations(0), rng=0)

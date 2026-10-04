@@ -89,9 +89,10 @@ iteration's best candidate. `record` is the iteration's `history` entry;
   populations, temperatures or neighborhoods.
 - **Algorithm:** `init`, `step` and its operators.
 
-`simulated_annealing` is built on `run`. A heuristic may still write its own
-loop (see the hill climber under *Reference implementation*), as long as it
-satisfies the Protocol.
+`simulated_annealing` and `genetic_algorithm` are both built on `run` (and
+so are `examples/custom_heuristic.py` and the experiments' random search). A
+heuristic may still write its own loop (see the hill climber under
+*Reference implementation*), as long as it satisfies the Protocol.
 
 ## 4. How are termination conditions represented?
 
@@ -157,9 +158,11 @@ against this API. It exercises the Protocol, `counting`, composed stops,
 both directions and seeded reproducibility. It deliberately writes its own
 loop to document the bare Protocol; for a new heuristic, prefer `run` and
 copy `simulated_annealing` in
-`pymetaheuristics/simulated_annealing/annealing.py` (an `init`/`step` pair).
+`pymetaheuristics/simulated_annealing/annealing.py` (an `init`/`step` pair)
+or `examples/custom_heuristic.py`.
 
 For a population-based heuristic, `genetic_algorithm` in
-`pymetaheuristics/genetic_algorithm/algorithm.py` is the full reference: one
-small private helper per generation step, feasibility enforced before
-evaluation, and a dict of stats per generation in `history`.
+`pymetaheuristics/genetic_algorithm/algorithm.py` is the full reference: an
+`init`/`step` pair on `run` (the carry is the population, its values and the
+elite), one small private helper per generation step, feasibility enforced
+before evaluation, and a dict of stats per generation in `history`.
