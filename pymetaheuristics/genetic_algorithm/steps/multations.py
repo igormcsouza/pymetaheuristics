@@ -1,3 +1,7 @@
+"""Mutation operators.
+
+Ownership: operators never modify their input; they return a new Genome.
+"""
 from random import randrange, random
 
 from pymetaheuristics.genetic_algorithm.types import Genome
@@ -9,7 +13,11 @@ def inter_mutation(
     probability: float = 0.75,
     **kwargs
 ) -> Genome:
-    """At a random chance, change interposition of q genes on the Genome."""
+    """At a random chance, change interposition of q genes on the Genome.
+
+    The input is not modified, a (possibly identical) copy is returned.
+    """
+    genome = genome[:]
     for _ in range(q):
         index = randrange(len(genome))
 
