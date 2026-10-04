@@ -31,6 +31,7 @@ experiments = [
 [project.urls]
 Homepage = "https://github.com/igormcsouza/pymetaheuristics"
 Repository = "https://github.com/igormcsouza/pymetaheuristics"
+Documentation = "https://igormcsouza.github.io/pymetaheuristics/"
 
 [tool.hatch.version]
 path = "pymetaheuristics/__init__.py"
