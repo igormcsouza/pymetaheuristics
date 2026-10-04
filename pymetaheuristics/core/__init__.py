@@ -1,4 +1,5 @@
 """Core building blocks shared by all heuristics."""
+from pymetaheuristics.core.direction import best_of, better, oriented
 from pymetaheuristics.core.evaluation import counting
 from pymetaheuristics.core.heuristic import Heuristic
 from pymetaheuristics.core.problem import Direction, Problem
@@ -9,5 +10,5 @@ from pymetaheuristics.core.termination import (
 
 __all__ = [
     'Direction', 'Heuristic', 'OptimizationResult', 'Problem', 'State',
-    'Stop', 'any_of', 'counting', 'max_evaluations', 'max_iterations',
-    'max_time', 'target_value']
+    'Stop', 'any_of', 'best_of', 'better', 'counting', 'max_evaluations',
+    'max_iterations', 'max_time', 'oriented', 'target_value']

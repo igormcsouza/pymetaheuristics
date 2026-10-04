@@ -2,6 +2,7 @@
 from dataclasses import dataclass
 from typing import Callable
 
+from pymetaheuristics.core.direction import better
 from pymetaheuristics.core.problem import Direction
 
 
@@ -32,10 +33,7 @@ def max_time(seconds: float) -> Stop:
 def target_value(
     value: float, direction: Direction = Direction.MINIMIZE
 ) -> Stop:
-    # ponytail: inline comparison; switch to core.direction helpers (#21)
-    if direction is Direction.MINIMIZE:
-        return lambda s: s.best_value <= value
-    return lambda s: s.best_value >= value
+    return lambda s: not better(value, s.best_value, direction)
 
 
 def any_of(*stops: Stop) -> Stop:

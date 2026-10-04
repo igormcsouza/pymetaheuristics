@@ -2,6 +2,8 @@ from typing import List, Optional, Tuple, Union
 from random import Random
 from time import time
 
+from pymetaheuristics.core.direction import better, oriented
+from pymetaheuristics.core.problem import Direction
 from pymetaheuristics.genetic_algorithm.types import (
     ConstraintFunction, CrossOverFunction, FitnessFunction,
     GeneticAlgorithmHistory, Genome, GenomeGeneratorFunction, MutationFunction,
@@ -36,17 +38,18 @@ class GeneticAlgorithm():
     steps, feel free to open a issue so your code, or someelse's code may
     become part of the package too.
 
-    Remember the GA will minimize the fitness function, so if you model is for
-    maximize, return the result * -1 (See Knapsack model on test folder). You
-    may also look for a specific result, so what you are looking is to minimize
-    the difference on the fitness function.
+    Pass ``direction=Direction.MAXIMIZE`` to maximize the fitness function
+    (default is MINIMIZE); no need to negate it (See Knapsack model on test
+    folder). To look for a specific result, minimize the difference.
     """
 
     def __init__(
         self, fitness_function: FitnessFunction,
         genome_generator: GenomeGeneratorFunction,
-        constraints: List[ConstraintFunction] = [lambda x: True]
+        constraints: List[ConstraintFunction] = [lambda x: True],
+        direction: Direction = Direction.MINIMIZE
     ):
+        self.direction = direction
         self.fitness_function = fitness_function
         self.genome_generator = genome_generator
         self.constraints = constraints
@@ -179,7 +182,8 @@ class GeneticAlgorithm():
         for i in range(epochs):
             # keep the k most fitted and repopulate with new ones
             parents = selection(
-                population, self.fitness_function, rng=rng, **kwargs)
+                population, self.fitness_function, rng=rng,
+                direction=self.direction, **kwargs)
             # Cross Over the parents to get a better solution
             children = crossover(*parents[:2], rng=rng, **kwargs)
             # Populate the next generation
@@ -198,7 +202,8 @@ class GeneticAlgorithm():
                         genome = self.genome_generator()
                 population[idx] = genome
             # sort the population according to their fitness
-            population.sort(key=lambda x: self.fitness_function(x))
+            population.sort(key=lambda x: oriented(
+                self.fitness_function(x), self.direction))
             # print the partial results if verbose
             if verbose:
                 print("Epoch %i got fitness %.2f" % (
@@ -207,7 +212,8 @@ class GeneticAlgorithm():
             self.history[start]['runs'].append((  # type: ignore
                 population[0], self.fitness_function(population[0])))
 
-            if self.fitness_function(population[0]) < best_result[1]:
+            if better(self.fitness_function(population[0]), best_result[1],
+                      self.direction):
                 best_result = (
                     population[0], self.fitness_function(population[0]))
 
