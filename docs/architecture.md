@@ -137,7 +137,9 @@ Through the returned `OptimizationResult`:
 
 - `history` is a list with one record per iteration. A best-value float is
   the default; an algorithm may record a dict of stats instead (e.g. GA mean
-  fitness, SA temperature) and documents its shape.
+  fitness, SA temperature) and documents its shape. A dict record should
+  include the best value so far under `'best_so_far'` (as the GA does), so
+  convergence curves compare directly with float histories such as SA's.
 - `iterations`, `elapsed` and `metadata` cover the rest. Under `run`,
   `metadata` always has `evaluations`, `termination` (`'stop'`) and `state`
   (final `State`), plus whatever the algorithm's `extras(carry)` returns

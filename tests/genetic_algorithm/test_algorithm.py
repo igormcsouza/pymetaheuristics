@@ -70,7 +70,8 @@ def test_result_contents():
         problem, stop=max_iterations(5), rng=0, population_size=8)
     assert result.iterations == 5
     assert len(result.history) == 6
-    assert set(result.history[0]) == {'best', 'mean', 'worst', 'solution'}
+    assert set(result.history[0]) == {
+        'best', 'mean', 'worst', 'solution', 'best_so_far'}
     # one evaluation per genome per generation, selection uses the cache
     assert result.metadata['evaluations'] == calls == 6 * 8
     state = result.metadata['termination']
@@ -152,3 +153,32 @@ def test_selection_may_evaluate_new_genomes():
         make_problem(), stop=max_iterations(3), rng=0, population_size=6,
         selection=selection)
     assert result.metadata['evaluations'] > 4 * 6
+
+
+@pytest.mark.parametrize('direction', list(Direction))
+def test_history_best_so_far_and_elitism(direction):
+    result = genetic_algorithm(
+        make_problem(direction), stop=max_iterations(15), rng=0)
+    pick = min if direction is Direction.MINIMIZE else max
+    so_far = [r['best_so_far'] for r in result.history]
+    assert so_far[-1] == result.best_value
+    for i, r in enumerate(result.history):
+        assert r['best_so_far'] == pick(
+            h['best'] for h in result.history[:i + 1])
+        # elitism: the best so far is never lost from the population
+        assert r['best'] == r['best_so_far']
+
+
+def test_population_is_bred_not_resampled():
+    generated = 0
+    base = make_problem()
+
+    def generate():
+        nonlocal generated
+        generated += 1
+        return base.generate()
+
+    genetic_algorithm(
+        Problem(generate=generate, evaluate=sum), stop=max_iterations(5),
+        rng=0, population_size=8)
+    assert generated == 8  # only the initial population is random
