@@ -16,7 +16,7 @@ keywords = ["metaheuristics", "python", "solver"]
 dependencies = []
 
 [project.optional-dependencies]
-dev = ["pytest", "pytest-cov", "flake8"]
+dev = ["pytest", "pytest-cov", "ruff", "pre-commit"]
 
 [project.urls]
 Homepage = "https://github.com/igormcsouza/pymetaheuristics"
@@ -24,3 +24,10 @@ Repository = "https://github.com/igormcsouza/pymetaheuristics"
 
 [tool.hatch.version]
 path = "pymetaheuristics/__init__.py"
+
+[tool.ruff]
+line-length = 79
+target-version = "py39"
+
+[tool.ruff.lint]
+select = ["E", "F", "W"]
