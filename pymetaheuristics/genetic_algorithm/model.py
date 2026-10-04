@@ -12,6 +12,7 @@ from pymetaheuristics.genetic_algorithm.steps.crossovers import (
     single_point_crossover)
 from pymetaheuristics.genetic_algorithm.steps.multations import inter_mutation
 from pymetaheuristics.genetic_algorithm.exceptions import LoadHistoryException
+from pymetaheuristics.core.feasibility import InfeasibleError, reject
 from pymetaheuristics.utils.rng import make_rng
 
 
@@ -45,11 +46,14 @@ class GeneticAlgorithm():
     def __init__(
         self, fitness_function: FitnessFunction,
         genome_generator: GenomeGeneratorFunction,
-        constraints: List[ConstraintFunction] = [lambda x: True]
+        constraints: Optional[List[ConstraintFunction]] = None,
+        max_tries: int = 1000
     ):
         self.fitness_function = fitness_function
         self.genome_generator = genome_generator
-        self.constraints = constraints
+        # thin adapter: constraints are just a Problem.feasible predicate
+        self.constraints = list(constraints or [])
+        self.max_tries = max_tries
         self.history: GeneticAlgorithmHistory = {}
 
     def load_history(self, history: GeneticAlgorithmHistory):
@@ -99,22 +103,9 @@ class GeneticAlgorithm():
 
     def _pop_generator(self, pop_size: int) -> List[Genome]:
         """Generate a population of genomes."""
-        # Initialize the population as an empty list
-        population: List[Genome] = list()
-        # Generate pop_size Genomes and append it to the population
-        for _ in range(pop_size):
-            accepted = False
-            genome = None
-
-            # Check if given genome is accepted on the contraints.
-            while not accepted:
-                genome = self.genome_generator()
-                accepted = self._check_constraints(genome)
-
-            if genome:
-                population.append(genome)
-
-        return population
+        generate = reject(
+            self.genome_generator, self._check_constraints, self.max_tries)
+        return [generate() for _ in range(pop_size)]
 
     def add_constraint(self, constraint: ConstraintFunction):
         """Genetic Contraint for a Gene."""
@@ -187,16 +178,16 @@ class GeneticAlgorithm():
             population.extend(
                 self._pop_generator(pop_size=pop_size-len(population)))
             # Mutate the population
-            population = [
-                mutation(genome, rng=rng, **kwargs) for genome in population]
-            # Check if every genome is still accepted by contraints
-            for idx, genome in enumerate(population):
-                accepted = False
-                while not accepted:
-                    accepted = self._check_constraints(genome)
-                    if not accepted:
-                        genome = self.genome_generator()
-                population[idx] = genome
+            safe_mutation = reject(
+                mutation, self._check_constraints, self.max_tries)
+            mutated = []
+            for genome in population:
+                try:
+                    mutated.append(safe_mutation(genome, rng=rng, **kwargs))
+                except InfeasibleError:
+                    # no feasible mutant found: keep the parent
+                    mutated.append(genome)
+            population = mutated
             # sort the population according to their fitness
             population.sort(key=lambda x: self.fitness_function(x))
             # print the partial results if verbose
