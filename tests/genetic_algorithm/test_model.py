@@ -136,3 +136,12 @@ def test_genetic_algorithm_keeps_parent_when_mutation_infeasible():
     best, _ = ga_model.train(
         epochs=2, pop_size=4, mutation=lambda g, **kw: [0, 0])
     assert best == [1, 1]
+
+
+def test_genetic_algorithm_model_load_history_unexpected_error():
+    import pytest
+    ga_model = GeneticAlgorithm(
+        fitness_function=sum, genome_generator=lambda: [1])
+    for history in ([1], {0: 1}):  # no .keys() / entry without .keys()
+        with pytest.raises(LoadHistoryException):
+            ga_model.load_history(history)  # type: ignore
