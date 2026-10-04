@@ -1,20 +1,20 @@
 name: Publish on PyPi
 
 on:
-  pull_request:
-    branches:
-      - main
+  release:
+    types: [published]
 
 jobs:
-  package:
+  publish:
     runs-on: ubuntu-latest
+    environment: pypi
+    permissions:
+      id-token: write  # PyPI trusted publishing (OIDC), no secrets needed
     steps:
-      - uses: actions/checkout@v2
-      - name: Install pre-requisites
-        run: pip install poetry
-      - name: Install python requirements
-        run: poetry install
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - name: Build package
-        run: poetry build
-      - name: Publish builded package
-        run: poetry publish -u ${{ secrets.USERNAME }} -p ${{ secrets.PASSWORD }}
+        run: pip install build && python -m build
+      - uses: pypa/gh-action-pypi-publish@release/v1
