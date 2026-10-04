@@ -127,3 +127,12 @@ def test_genetic_algorithm_unsatisfiable_constraint_raises():
         constraints=[lambda x: False], max_tries=3)
     with pytest.raises(InfeasibleError):
         ga_model.train(epochs=1, pop_size=4)
+
+
+def test_genetic_algorithm_keeps_parent_when_mutation_infeasible():
+    ga_model = GeneticAlgorithm(
+        fitness_function=sum, genome_generator=lambda: [1, 1],
+        constraints=[lambda x: 1 in x], max_tries=3)
+    best, _ = ga_model.train(
+        epochs=2, pop_size=4, mutation=lambda g, **kw: [0, 0])
+    assert best == [1, 1]
