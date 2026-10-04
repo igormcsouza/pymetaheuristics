@@ -25,6 +25,16 @@ jobs:
           parallel: true
           flag-name: Unit Test ${{ matrix.python-version }}
 
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          python-version: "3.12"
+      - name: Build documentation
+        run: uv run --only-group docs mkdocs build --strict
+
   coveralls_finish:
     needs: package
     runs-on: ubuntu-latest
