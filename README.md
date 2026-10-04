@@ -36,6 +36,7 @@ First install the package (available on pypi)
 ```bash
 $ pip install pymetaheuristics
 ```
+Requires Python 3.9+. For development: `pip install -e .[dev]`.
 
 Import the algorithm model you want to use to solve you problem. Implement the
 needed functions and pass to the model. Train and get the results.
