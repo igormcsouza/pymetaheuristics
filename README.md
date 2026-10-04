@@ -55,6 +55,14 @@ Every module has its integration test, which I submit the model for testing
 with very know NP-Hard problems today (Knapsack, tsp, ...). If you want to see
 how it goes, check out the integrations under the model testing folder.
 
+## Reproducibility
+
+Pass `rng=` (an `int` seed or a `random.Random`) to `train` and it is handed
+to the selection, crossover and mutation steps, so the same seed gives the
+same result. Custom steps receive `rng` as a keyword argument. Limitation: the
+user-supplied `genome_generator` is called without an rng, so seed whatever
+random source it uses yourself (e.g. a seeded `random.Random` in a closure).
+
 ## How to contribute
 
 Your code and help is very appreciate! Please, send your issue and pr's 

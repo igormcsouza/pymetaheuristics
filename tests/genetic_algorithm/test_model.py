@@ -1,6 +1,6 @@
 from pymetaheuristics.genetic_algorithm.exceptions import LoadHistoryException
 from pymetaheuristics.genetic_algorithm.types import GeneticAlgorithmHistory
-from random import randint
+from random import Random, randint
 
 from pymetaheuristics.genetic_algorithm.model import GeneticAlgorithm
 
@@ -104,3 +104,16 @@ def test_genetic_algorithm_model_load_history_failed():
         assert True
     else:
         assert False
+
+
+def _seeded_run(seed):
+    gen_rng = Random(seed)  # genome_generator is the caller's to seed
+    ga_model = GeneticAlgorithm(
+        fitness_function=lambda x: -sum(x),
+        genome_generator=lambda: [gen_rng.randint(1, 50) for _ in range(6)])
+    return ga_model.train(5, 10, rng=seed)
+
+
+def test_genetic_algorithm_same_seed_same_result():
+    assert _seeded_run(42) == _seeded_run(42)
+    assert _seeded_run(1) != _seeded_run(2)
