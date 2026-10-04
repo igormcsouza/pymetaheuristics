@@ -1,5 +1,6 @@
 from random import randint
 
+from pymetaheuristics.core.problem import Direction
 from pymetaheuristics.genetic_algorithm.model import GeneticAlgorithm
 
 items = [
@@ -25,7 +26,7 @@ def fitness_function(genome):
     score = 0
     for i, digit in enumerate(genome):
         score += digit * items[i][1]
-    return score * -1
+    return score
 
 
 def maximun_capacity(genome):
@@ -37,7 +38,8 @@ def maximun_capacity(genome):
 
 model = GeneticAlgorithm(
     genome_generator=genome_generator,
-    fitness_function=fitness_function
+    fitness_function=fitness_function,
+    direction=Direction.MAXIMIZE
 )
 
 model.add_constraint(maximun_capacity)
@@ -45,7 +47,7 @@ model.add_constraint(maximun_capacity)
 result = model.train(30, 10, k=5, verbose=True)
 
 print("Genetic Algorithm result", result, sep="\n")
-print("Ground Truth", ([0, 1, 1, 1, 0, 1, 0, 0], -14.7), sep="\n")
+print("Ground Truth", ([0, 1, 1, 1, 0, 1, 0, 0], 14.7), sep="\n")
 
 ans = (14.7 - abs(round(result[1], 2))) / 14.7
 print(round(ans*100, 2), "%... off the optimal")
