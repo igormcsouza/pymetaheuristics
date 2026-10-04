@@ -9,13 +9,17 @@ description = "Metaheuristics solvers in Python"
 readme = "README.md"
 license = "MIT"
 license-files = ["LICENSE"]
-# 3.7 and 3.8 are end-of-life
-requires-python = ">=3.9"
+requires-python = ">=3.12"
 authors = [{ name = "Igor Souza", email = "igormcsouza@gmail.com" }]
 keywords = ["metaheuristics", "python", "solver"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+]
 dependencies = []
 
-[project.optional-dependencies]
+[dependency-groups]
 dev = ["pytest", "pytest-cov", "ruff", "pre-commit"]
 
 [project.urls]
@@ -27,7 +31,7 @@ path = "pymetaheuristics/__init__.py"
 
 [tool.ruff]
 line-length = 79
-target-version = "py39"
+target-version = "py312"
 
 [tool.ruff.lint]
 select = ["E", "F", "W"]
