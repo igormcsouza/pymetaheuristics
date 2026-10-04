@@ -1,3 +1,8 @@
+"""Selection operators.
+
+Ownership: operators never modify the population; the returned Genomes are
+copies, not aliases of the population members.
+"""
 from random import choices
 
 from pymetaheuristics.genetic_algorithm.types import (
@@ -14,8 +19,9 @@ def random_weighted_selection(
     fitness of each Genome as weights so the most fitted is very likely to be
     choosen, but, still gives room for a little of jumps.
     """
-    return choices(
+    selected = choices(
         population=population,
         weights=[-fitness_function(genome) for genome in population],
         k=k
     )
+    return [genome[:] for genome in selected]
