@@ -2,8 +2,9 @@ from typing import List, Optional, Tuple, Union
 from random import Random
 from time import time
 
-from pymetaheuristics.core.direction import better, oriented
-from pymetaheuristics.core.problem import Direction
+from pymetaheuristics.core.problem import Direction, Problem
+from pymetaheuristics.core.termination import max_iterations
+from pymetaheuristics.genetic_algorithm.algorithm import genetic_algorithm
 from pymetaheuristics.genetic_algorithm.types import (
     ConstraintFunction, CrossOverFunction, FitnessFunction,
     GeneticAlgorithmHistory, Genome, GenomeGeneratorFunction, MutationFunction,
@@ -14,12 +15,14 @@ from pymetaheuristics.genetic_algorithm.steps.crossovers import (
     single_point_crossover)
 from pymetaheuristics.genetic_algorithm.steps.multations import inter_mutation
 from pymetaheuristics.genetic_algorithm.exceptions import LoadHistoryException
-from pymetaheuristics.core.feasibility import InfeasibleError, reject
-from pymetaheuristics.utils.rng import make_rng
 
 
 class GeneticAlgorithm():
-    """## A Genetic Representation of a Real World Problem
+    """Deprecated: use ``genetic_algorithm(problem, stop=..., ...)`` from
+    ``pymetaheuristics.genetic_algorithm.algorithm``. This class is a thin
+    backwards-compatible wrapper around it and will be removed later.
+
+    ## A Genetic Representation of a Real World Problem
 
     Genetic Algorithm tries to mimic what nature does for natural selection to
     solve real world problems. A problem may be represent as an Genetic Problem
@@ -104,12 +107,6 @@ class GeneticAlgorithm():
         # If everything is ok, update the history
         self.history.update(history)
 
-    def _pop_generator(self, pop_size: int) -> List[Genome]:
-        """Generate a population of genomes."""
-        generate = reject(
-            self.genome_generator, self._check_constraints, self.max_tries)
-        return [generate() for _ in range(pop_size)]
-
     def add_constraint(self, constraint: ConstraintFunction):
         """Genetic Contraint for a Gene."""
         self.constraints.append(constraint)
@@ -132,7 +129,7 @@ class GeneticAlgorithm():
         rng: Optional[Union[Random, int]] = None,
         **kwargs
     ) -> Tuple[Genome, float]:
-        """Loop over evolutionary steps until get to a limit.
+        """Run ``genetic_algorithm`` for ``epochs`` generations (deprecated).
 
         Below is the Hyperparameters one can change to get better results.
         Just a quick note, all the problems have their specific parameters,
@@ -151,13 +148,24 @@ class GeneticAlgorithm():
         parameters that can be set as parameters on this function. The code
         will automatically deal with it.
         """
-        rng = make_rng(rng)
-        # initialize history stats
-        start = time()
-        self.history[start] = {
-            "runs": list(),
-            "best": tuple(),
-            "elapsed": 0,
+        problem = Problem(
+            generate=self.genome_generator, evaluate=self.fitness_function,
+            feasible=self._check_constraints, direction=self.direction)
+        result = genetic_algorithm(
+            problem, stop=max_iterations(epochs), rng=rng,
+            population_size=pop_size, selection=selection,
+            crossover=crossover, mutation=mutation, max_tries=self.max_tries,
+            **kwargs)
+        # history[0] is the initial population; runs are one per epoch
+        runs = [(r['solution'], r['best']) for r in result.history[1:]]
+        if verbose:
+            for i, (genome, fitness) in enumerate(runs):
+                print("Epoch %i got fitness %.2f" % (i, fitness), genome)
+
+        self.history[time()] = {
+            "runs": runs,
+            "best": (result.best_solution, result.best_value),
+            "elapsed": result.elapsed,
             "args": {
                 "epochs": epochs, "pop_size": pop_size,
                 "selection": selection.__name__,
@@ -166,54 +174,4 @@ class GeneticAlgorithm():
                 "verbose": verbose, "kwargs": kwargs
             }
         }
-        # initialize the population for this round
-        population = self._pop_generator(pop_size)
-        best_result = (population[0]), self.fitness_function(population[0])
-
-        for i in range(epochs):
-            # keep the k most fitted and repopulate with new ones
-            parents = selection(
-                population, self.fitness_function, rng=rng,
-                direction=self.direction, **kwargs)
-            # Cross Over the parents to get a better solution
-            children = crossover(*parents[:2], rng=rng, **kwargs)
-            # Populate the next generation
-            population = [*parents, *children]
-            population.extend(
-                self._pop_generator(pop_size=pop_size-len(population)))
-            # Mutate the population
-            safe_mutation = reject(
-                mutation, self._check_constraints, self.max_tries)
-            mutated = []
-            for genome in population:
-                try:
-                    mutated.append(safe_mutation(genome, rng=rng, **kwargs))
-                except InfeasibleError:
-                    # no feasible mutant: keep the parent if it is feasible
-                    # (crossover children may not be), else draw a new one
-                    mutated.append(
-                        genome if self._check_constraints(genome)
-                        else self._pop_generator(1)[0])
-            population = mutated
-            # sort the population according to their fitness
-            population.sort(key=lambda x: oriented(
-                self.fitness_function(x), self.direction))
-            # print the partial results if verbose
-            if verbose:
-                print("Epoch %i got fitness %.2f" % (
-                    i, self.fitness_function(population[0])), population[0])
-            # save the partial run history
-            self.history[start]['runs'].append((  # type: ignore
-                population[0], self.fitness_function(population[0])))
-
-            if better(self.fitness_function(population[0]), best_result[1],
-                      self.direction):
-                best_result = (
-                    population[0], self.fitness_function(population[0]))
-
-        # save final results before quit
-        self.history[start]['best'] = best_result
-        self.history[start]['elapsed'] = time() - start
-
-        # when done the epochs, return the most fit and its fitness score
-        return best_result
+        return result.best_solution, result.best_value

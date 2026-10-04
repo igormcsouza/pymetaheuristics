@@ -1,7 +1,7 @@
 from random import randint
 
-from pymetaheuristics.core.problem import Direction
-from pymetaheuristics.genetic_algorithm.model import GeneticAlgorithm
+from pymetaheuristics.core import Direction, Problem, max_iterations
+from pymetaheuristics.genetic_algorithm import genetic_algorithm
 
 items = [
     [25, 1.2],
@@ -36,18 +36,18 @@ def maximun_capacity(genome):
     return weight <= 100
 
 
-model = GeneticAlgorithm(
-    genome_generator=genome_generator,
-    fitness_function=fitness_function,
+problem = Problem(
+    generate=genome_generator,
+    evaluate=fitness_function,  # total value, maximized as is
+    feasible=maximun_capacity,
     direction=Direction.MAXIMIZE
 )
 
-model.add_constraint(maximun_capacity)
+result = genetic_algorithm(
+    problem, stop=max_iterations(30), rng=0, population_size=10, k=5)
 
-result = model.train(30, 10, k=5, verbose=True)
-
-print("Genetic Algorithm result", result, sep="\n")
+print("Genetic Algorithm result", result.best_solution, result.best_value)
 print("Ground Truth", ([0, 1, 1, 1, 0, 1, 0, 0], 14.7), sep="\n")
 
-ans = (14.7 - abs(round(result[1], 2))) / 14.7
+ans = (14.7 - round(result.best_value, 2)) / 14.7
 print(round(ans*100, 2), "%... off the optimal")

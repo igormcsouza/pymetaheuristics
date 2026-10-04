@@ -132,3 +132,8 @@ when a real use case (progress bars, plotting during a run) shows up.
 against this API. It exercises the Protocol, `counting`, composed stops,
 both directions and seeded reproducibility, and is the template to copy when
 adding a new heuristic.
+
+For a population-based heuristic, `genetic_algorithm` in
+`pymetaheuristics/genetic_algorithm/algorithm.py` is the full reference: one
+small private helper per generation step, feasibility enforced before
+evaluation, and a dict of stats per generation in `history`.
