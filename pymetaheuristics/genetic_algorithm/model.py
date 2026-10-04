@@ -1,3 +1,4 @@
+import warnings
 from typing import List, Optional, Tuple, Union
 from random import Random
 from time import time
@@ -54,6 +55,10 @@ class GeneticAlgorithm():
         max_tries: int = 1000,
         direction: Direction = Direction.MINIMIZE
     ):
+        warnings.warn(
+            "GeneticAlgorithm is deprecated; use genetic_algorithm(problem, "
+            "stop=...) instead. It will be removed in 0.3 (see issue #50).",
+            DeprecationWarning, stacklevel=2)
         self.direction = direction
         self.fitness_function = fitness_function
         self.genome_generator = genome_generator
@@ -64,45 +69,24 @@ class GeneticAlgorithm():
 
     def load_history(self, history: GeneticAlgorithmHistory):
         """check if the given history is on the right pattern."""
-        # are there keys on history?
-        try:
-            assert history is not None
-            assert len(history.keys()) > 0
-        except AssertionError as ae:
+        if not hasattr(history, "keys") or len(history.keys()) == 0:
             raise LoadHistoryException(
-                "The given history of has not the correct pattern. %s" % ae)
-        except Exception as e:
-            raise LoadHistoryException(
-                "An unexpected error occured. %s" % e)
+                "The given history of has not the correct pattern. "
+                "It must be a non-empty mapping.")
 
-        for keys in history.keys():
-            # Get list of arguments
-            try:
-                parameters = history[keys].keys()
-                # are there args?
-                assert "args" in parameters
-                arguments = history[keys]["args"].keys()  # type: ignore
-                # are there runs?
-                assert "runs" in parameters
-                # is there best?
-                assert "best" in parameters
-                # is there elapsed?
-                assert "elapsed" in parameters
-
-                assert "epochs" in arguments
-                assert "pop_size" in arguments
-                assert "selection" in arguments
-                assert "crossover" in arguments
-                assert "mutation" in arguments
-                assert "verbose" in arguments
-                assert "kwargs" in arguments
-            except AssertionError as ae:
+        top = ("args", "runs", "best", "elapsed")
+        args = ("epochs", "pop_size", "selection", "crossover", "mutation",
+                "verbose", "kwargs")
+        for key, entry in history.items():
+            if not hasattr(entry, "keys") or any(k not in entry for k in top):
                 raise LoadHistoryException(
-                    "The given history of %s has not the correct pattern. %s"
-                    % (keys, ae))
-            except Exception as e:
+                    "The given history of %s has not the correct pattern. "
+                    "Expected keys %s." % (key, top))
+            if (not hasattr(entry["args"], "keys")
+                    or any(k not in entry["args"] for k in args)):
                 raise LoadHistoryException(
-                    "An unexpected error occured. %s" % e)
+                    "The given history of %s has not the correct pattern. "
+                    "Expected args %s." % (key, args))
 
         # If everything is ok, update the history
         self.history.update(history)

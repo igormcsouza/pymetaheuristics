@@ -17,4 +17,4 @@ class Heuristic(Protocol):
         self, problem: Problem, *, stop: Stop,
         rng: Optional[Union[Random, int]] = None,
     ) -> OptimizationResult:
-        ...
+        ...  # pragma: no cover

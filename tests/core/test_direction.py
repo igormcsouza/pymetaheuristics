@@ -1,11 +1,15 @@
 from random import Random
 
+import pytest
+
 from pymetaheuristics.core import Direction, best_of, better
 from pymetaheuristics.genetic_algorithm.model import GeneticAlgorithm
 from pymetaheuristics.genetic_algorithm.steps.selections import (
     random_weighted_selection)
 
 MIN, MAX = Direction.MINIMIZE, Direction.MAXIMIZE
+
+legacy = pytest.mark.filterwarnings("ignore::DeprecationWarning")
 
 
 def test_better_and_best_of_both_directions():
@@ -24,6 +28,7 @@ def test_selection_prefers_best_for_each_direction():
         assert picked.count(want) > 3 * picked.count(worst)
 
 
+@legacy
 def test_train_optimizes_in_both_directions():
     def run(direction):
         rng = Random(7)
@@ -37,6 +42,7 @@ def test_train_optimizes_in_both_directions():
     assert run(MAX) >= 16
 
 
+@legacy
 def test_maximize_respects_constraints():
     rng = Random(7)
     ga = GeneticAlgorithm(
