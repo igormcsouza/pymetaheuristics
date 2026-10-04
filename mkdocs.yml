@@ -1,5 +1,6 @@
 site_name: pymetaheuristics
 site_description: Metaheuristics for optimization problems in plain Python
+site_url: https://igormcsouza.github.io/pymetaheuristics/
 repo_url: https://github.com/igormcsouza/pymetaheuristics
 edit_uri: edit/main/docs/
 theme: mkdocs
@@ -12,6 +13,7 @@ nav:
   - Benchmarks: benchmarks.md
   - Experiments: experiments.md
   - Migrating from 0.1: migrating.md
+  - Releasing: releasing.md
 validation:
   links:
     anchors: warn

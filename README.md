@@ -10,6 +10,9 @@ solution, how to evaluate it, which solutions are feasible, and whether to
 minimize or maximize. Then pass it to a heuristic: a Genetic Algorithm or
 Simulated Annealing. Every heuristic returns the same `OptimizationResult`.
 
+Documentation: <https://igormcsouza.github.io/pymetaheuristics/>
+([changelog](CHANGELOG.md)).
+
 ## Install
 
 Requires Python 3.12+.
