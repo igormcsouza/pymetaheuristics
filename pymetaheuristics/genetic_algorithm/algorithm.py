@@ -2,14 +2,15 @@
 
 One generation is an explicit pipeline of small steps::
 
-    select -> crossover -> fill -> mutate -> feasibility -> evaluate -> record
+    breed (select -> crossover, until full) -> mutate -> feasibility
+    -> evaluate -> elitism -> record
 
 Every genome that is evaluated (and so can become the best) is feasible.
 """
 from random import Random
 from statistics import fmean
 from time import perf_counter
-from typing import Any, Callable, Dict, List, Optional, Union
+from typing import Any, Callable, Dict, List, Optional, Tuple, Union
 
 from pymetaheuristics.core.direction import better, oriented
 from pymetaheuristics.core.evaluation import counting
@@ -41,13 +42,17 @@ def genetic_algorithm(
 ) -> OptimizationResult:
     """Evolve a population of ``problem`` solutions until ``stop`` is met.
 
-    Each generation: ``selection`` picks parents, ``crossover`` breeds the
-    first two, fresh genomes fill the population back to
-    ``population_size``, every genome is mutated (``mutation`` is retried
-    up to ``max_tries`` times for a feasible mutant, else the genome is kept
-    as is), then any genome still infeasible (e.g. a crossover child) is
-    passed through ``repair`` if given, and replaced by a fresh feasible
-    genome if that does not fix it. ``operator_kwargs`` (e.g. ``k=5``) are
+    Each generation breeds ``population_size`` children: ``selection``
+    picks parents and ``crossover`` breeds the first two, repeated until
+    the population is full. Every child is mutated (``mutation`` is retried
+    up to ``max_tries`` times for a feasible mutant, else the child is kept
+    as is), then any child still infeasible is passed through ``repair`` if
+    given, and replaced by a fresh feasible genome if that does not fix it.
+    After evaluation the best genome so far replaces the worst child if it
+    is better (elitism), so it is never lost and never re-evaluated: each
+    generation costs ``population_size`` evaluations (plus any made by a
+    custom ``selection`` on genomes outside the population).
+    ``operator_kwargs`` (e.g. ``k=5``) are
     forwarded to every operator, together with ``rng`` (and ``direction``
     for selection).
 
@@ -57,9 +62,12 @@ def genetic_algorithm(
     The result's ``history`` has one dict per generation, the initial
     population first (so ``len(history) == iterations + 1``)::
 
-        {'best': float, 'mean': float, 'worst': float, 'solution': Genome}
+        {'best': float, 'mean': float, 'worst': float, 'solution': Genome,
+         'best_so_far': float}
 
-    ``best``/``solution`` are that generation's best (not the best so far).
+    ``best``/``solution`` are that generation's best; ``best_so_far`` is
+    the best value seen up to and including that generation (the same
+    measure as SA's float history). With elitism the two values coincide.
     ``metadata`` holds ``evaluations`` (objective calls) and
     ``termination``, the ``State`` that satisfied ``stop``.
 
@@ -74,8 +82,9 @@ def genetic_algorithm(
     population = [generate() for _ in range(population_size)]
     values = [problem.evaluate(genome) for genome in population]
     record = _record(population, values, problem.direction)
-    history = [record]
     best, best_value = record['solution'], record['best']
+    record['best_so_far'] = best_value
+    history = [record]
     generation = 0
 
     while True:
@@ -83,21 +92,23 @@ def genetic_algorithm(
             generation, evaluations(), perf_counter() - start, best_value)
         if stop(state):
             break
-        parents = _select(
-            problem, population, values, selection, rng, operator_kwargs)
-        offspring = _crossover(parents, crossover, rng, operator_kwargs)
-        offspring += [
-            generate() for _ in range(population_size - len(offspring))]
+        # TODO(#49): migrate to core.loop.run
+        offspring = _breed(
+            problem, population, values, selection, crossover,
+            population_size, rng, operator_kwargs)
         offspring = _mutate(
             offspring, mutation, problem.feasible, max_tries, rng,
             operator_kwargs)
         population = _ensure_feasible(
             offspring, problem.feasible, repair, generate)
         values = [problem.evaluate(genome) for genome in population]
+        population, values = _keep_elite(
+            population, values, best, best_value, problem.direction)
         record = _record(population, values, problem.direction)
-        history.append(record)
         if better(record['best'], best_value, problem.direction):
             best, best_value = record['solution'], record['best']
+        record['best_so_far'] = best_value
+        history.append(record)
         generation += 1
 
     return OptimizationResult(
@@ -122,12 +133,17 @@ def _select(
         population, fitness, rng=rng, direction=problem.direction, **kwargs)
 
 
-def _crossover(
-    parents: Population, crossover: CrossOverFunction, rng: Random,
-    kwargs: Dict[str, Any]
+def _breed(
+    problem: Problem, population: Population, values: List[float],
+    selection: SelectionFunction, crossover: CrossOverFunction, size: int,
+    rng: Random, kwargs: Dict[str, Any]
 ) -> Population:
-    """Parents plus the children of the first two."""
-    return [*parents, *crossover(*parents[:2], rng=rng, **kwargs)]
+    """``size`` children, each pair bred from freshly selected parents."""
+    children: Population = []
+    while len(children) < size:
+        parents = _select(problem, population, values, selection, rng, kwargs)
+        children += crossover(*parents[:2], rng=rng, **kwargs)
+    return children[:size]
 
 
 def _mutate(
@@ -159,6 +175,19 @@ def _ensure_feasible(
             genome = repair(genome)
         result.append(genome if feasible(genome) else generate())
     return result
+
+
+def _keep_elite(
+    population: Population, values: List[float], elite: Genome,
+    elite_value: float, direction: Direction
+) -> Tuple[Population, List[float]]:
+    """Population and values with the worst replaced by ``elite`` if better."""
+    worst = max(
+        range(len(values)), key=lambda i: oriented(values[i], direction))
+    if not better(elite_value, values[worst], direction):
+        return population, values
+    return ([*population[:worst], elite, *population[worst + 1:]],
+            [*values[:worst], elite_value, *values[worst + 1:]])
 
 
 def _record(

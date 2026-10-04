@@ -11,21 +11,29 @@ from pymetaheuristics.genetic_algorithm.exceptions import CrossOverException
 from pymetaheuristics.utils.rng import make_rng
 
 
+def _cut_point(
+    parent1: Genome, parent2: Genome, rng: Optional[Random]
+) -> Optional[int]:
+    """Random cut in ``[1, len - 1]``; None if the genomes are too short.
+
+    Raises CrossOverException if the parents differ in length.
+    """
+    if len(parent1) != len(parent2):
+        raise CrossOverException(
+            "Genomes has to have the same length, got %d, %d" % (
+                len(parent1), len(parent2)))
+    if len(parent1) < 2:
+        return None
+    return make_rng(rng).randint(1, len(parent1) - 1)
+
+
 def single_point_crossover(
     parent1: Genome, parent2: Genome, rng: Optional[Random] = None, **kwargs
 ) -> Tuple[Genome, Genome]:
     """Cut 2 Genomes at a random cut_point and swap their tails."""
-    if len(parent1) == len(parent2):
-        length = len(parent1)
-    else:
-        raise CrossOverException(
-            "Genomes has to have the same length, got %d, %d" % (
-                len(parent1), len(parent2)))
-
-    if length < 2:
+    cut_point = _cut_point(parent1, parent2, rng)
+    if cut_point is None:
         return parent1[:], parent2[:]
-
-    cut_point = make_rng(rng).randint(1, length - 1)
 
     return (parent1[:cut_point] + parent2[cut_point:],
             parent2[:cut_point] + parent1[cut_point:])
@@ -45,17 +53,9 @@ def pmx_single_point(
 
     This implementation suites very well the TSP problem.
     """
-    if len(parent1) == len(parent2):
-        length = len(parent1)
-    else:
-        raise CrossOverException(
-            "Genomes has to have the same length, got %d, %d" % (
-                len(parent1), len(parent2)))
-
-    if length < 2:
+    cut_point = _cut_point(parent1, parent2, rng)
+    if cut_point is None:
         return parent1[:], parent2[:]
-
-    cut_point = make_rng(rng).randint(1, length - 1)
 
     child1 = parent1[:]
     for i in range(cut_point):

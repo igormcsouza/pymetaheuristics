@@ -1,6 +1,6 @@
-class CrossOverException(BaseException):
+class CrossOverException(ValueError):
     pass
 
 
-class LoadHistoryException(BaseException):
+class LoadHistoryException(Exception):
     pass
