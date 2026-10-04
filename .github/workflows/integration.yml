@@ -6,11 +6,12 @@ jobs:
   package:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Install pre-requisites
-        run: pip install poetry
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
       - name: Install python requirements
-        run: poetry install
+        run: pip install -e .[dev]
       - name: Run unit test and coverage
         run: sh scripts/test.sh
       - name: Update coveralls data

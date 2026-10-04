@@ -1,26 +1,26 @@
-[tool.poetry]
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
 name = "pymetaheuristics"
-version = "0.1.1"
-description = ""
-authors = ["Igor Souza <igormcsouza@gmail.com>"]
-keywords = ["metaheuristics", "python", "solver"]
+dynamic = ["version"]
+description = "Metaheuristics solvers in Python"
 readme = "README.md"
 license = "MIT"
-homepage = "https://github.com/igormcsouza/pymetaheuristics"
-repository = "https://github.com/igormcsouza/pymetaheuristics"
-include = [
-    "LICENSE",
-]
+license-files = ["LICENSE"]
+# 3.7 and 3.8 are end-of-life
+requires-python = ">=3.9"
+authors = [{ name = "Igor Souza", email = "igormcsouza@gmail.com" }]
+keywords = ["metaheuristics", "python", "solver"]
+dependencies = []
 
-[tool.poetry.dependencies]
-python = "^3.7"
+[project.optional-dependencies]
+dev = ["pytest", "pytest-cov", "flake8"]
 
-[tool.poetry.dev-dependencies]
-pytest = "^5.2"
-flake8 = "^3.9"
-coverage = {extras = ["toml"], version = "^5.5"}
-pytest-cov = "^2.12.1"
+[project.urls]
+Homepage = "https://github.com/igormcsouza/pymetaheuristics"
+Repository = "https://github.com/igormcsouza/pymetaheuristics"
 
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+[tool.hatch.version]
+path = "pymetaheuristics/__init__.py"
