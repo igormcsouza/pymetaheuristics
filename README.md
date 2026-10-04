@@ -77,6 +77,20 @@ Heuristics are plain functions `heuristic(problem, *, stop, rng=None, ...)`
 returning an `OptimizationResult`. See
 [docs/architecture.md](docs/architecture.md).
 
+## Examples
+
+Runnable scripts in [examples/](examples/) extend the library from outside,
+using only the public API (each is also run by `tests/examples`):
+
+- [custom_selection.py](examples/custom_selection.py): tournament selection
+- [custom_crossover.py](examples/custom_crossover.py): order crossover (TSP)
+- [custom_mutation_neighborhood.py](examples/custom_mutation_neighborhood.py):
+  insertion move as GA mutation and SA neighbor
+- [custom_constraint_repair.py](examples/custom_constraint_repair.py):
+  knapsack feasibility by repair and by penalty
+- [custom_heuristic.py](examples/custom_heuristic.py): a new heuristic
+  (hill climbing with restarts) as a plain function
+
 ## How to contribute
 
 Your code and help is very appreciate! Please, send your issue and pr's 
