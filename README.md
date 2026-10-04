@@ -64,6 +64,12 @@ same result. Custom steps receive `rng` as a keyword argument. Limitation: the
 user-supplied `genome_generator` is called without an rng, so seed whatever
 random source it uses yourself (e.g. a seeded `random.Random` in a closure).
 
+## Adding a heuristic
+
+Heuristics are plain functions `heuristic(problem, *, stop, rng=None, ...)`
+returning an `OptimizationResult`. See
+[docs/architecture.md](docs/architecture.md).
+
 ## How to contribute
 
 Your code and help is very appreciate! Please, send your issue and pr's 
