@@ -64,6 +64,7 @@ def test_protocol_result_and_determinism():
     assert a.history == sorted(a.history, reverse=True)
     assert a.metadata['termination'] == 'stop'
     assert a.metadata['evaluations'] == 51
+    assert a.metadata['state'].iteration == 50
     assert a.metadata['final_temperature'] == pytest.approx(
         100 * 0.95 ** 50)
 

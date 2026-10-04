@@ -1,6 +1,6 @@
 """Composable stop conditions: a ``Stop`` is a predicate over ``State``."""
 from dataclasses import dataclass
-from typing import Callable
+from typing import Callable, Optional
 
 from pymetaheuristics.core.direction import better
 from pymetaheuristics.core.problem import Direction
@@ -13,6 +13,7 @@ class State:
     evaluations: int
     elapsed: float
     best_value: float
+    direction: Direction = Direction.MINIMIZE
 
 
 Stop = Callable[[State], bool]
@@ -31,9 +32,12 @@ def max_time(seconds: float) -> Stop:
 
 
 def target_value(
-    value: float, direction: Direction = Direction.MINIMIZE
+    value: float, direction: Optional[Direction] = None
 ) -> Stop:
-    return lambda state: not better(value, state.best_value, direction)
+    """Stop once ``best_value`` reaches ``value``; compares under
+    ``state.direction`` unless ``direction`` overrides it."""
+    return lambda state: not better(
+        value, state.best_value, direction or state.direction)
 
 
 def any_of(*stops: Stop) -> Stop:
