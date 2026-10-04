@@ -36,7 +36,8 @@ First install the package (available on pypi)
 ```bash
 $ pip install pymetaheuristics
 ```
-Requires Python 3.9+. For development: `pip install -e .[dev]`.
+Requires Python 3.9+. For development: `pip install -e .[dev]`, then `pre-commit install`.
+Lint with `ruff check .` and test with `sh scripts/test.sh`.
 
 Import the algorithm model you want to use to solve you problem. Implement the
 needed functions and pass to the model. Train and get the results.
@@ -63,6 +64,12 @@ to the selection, crossover and mutation steps, so the same seed gives the
 same result. Custom steps receive `rng` as a keyword argument. Limitation: the
 user-supplied `genome_generator` is called without an rng, so seed whatever
 random source it uses yourself (e.g. a seeded `random.Random` in a closure).
+
+## Adding a heuristic
+
+Heuristics are plain functions `heuristic(problem, *, stop, rng=None, ...)`
+returning an `OptimizationResult`. See
+[docs/architecture.md](docs/architecture.md).
 
 ## How to contribute
 
