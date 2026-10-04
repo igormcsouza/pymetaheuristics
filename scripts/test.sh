@@ -1,1 +1,1 @@
-poetry run pytest --cov=pymetaheuristics
+pytest --cov=pymetaheuristics
