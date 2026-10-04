@@ -9,9 +9,9 @@ def oriented(value: float, direction: Direction) -> float:
     return -value if direction is Direction.MAXIMIZE else value
 
 
-def better(a: float, b: float, direction: Direction) -> bool:
+def better(value: float, other: float, direction: Direction) -> bool:
     """True if a is strictly better than b."""
-    return oriented(a, direction) < oriented(b, direction)
+    return oriented(value, direction) < oriented(other, direction)
 
 
 def best_of(values: Iterable[float], direction: Direction) -> float:

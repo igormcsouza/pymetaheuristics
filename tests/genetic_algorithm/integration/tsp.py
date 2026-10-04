@@ -1,7 +1,7 @@
 from random import shuffle
 
 from pymetaheuristics.core import Problem, max_iterations
-from pymetaheuristics.utils.distances import euclidian_distance
+from pymetaheuristics.utils.distances import euclidean_distance
 from pymetaheuristics.genetic_algorithm import genetic_algorithm
 from pymetaheuristics.genetic_algorithm.steps.crossovers import (
     pmx_single_point)
@@ -20,7 +20,7 @@ distance_matrix = list()
 for i, city1 in enumerate(cities_list):
     distance_matrix.append([])
     for city2 in cities_list:
-        distance_matrix[i].append(euclidian_distance(city1, city2))
+        distance_matrix[i].append(euclidean_distance(city1, city2))
 
 
 def genome_generator() -> Genome:

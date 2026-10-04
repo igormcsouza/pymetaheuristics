@@ -12,26 +12,27 @@ from pymetaheuristics.utils.rng import make_rng
 
 
 def single_point_crossover(
-    g1: Genome, g2: Genome, rng: Optional[Random] = None, **kwargs
+    parent1: Genome, parent2: Genome, rng: Optional[Random] = None, **kwargs
 ) -> Tuple[Genome, Genome]:
-    """Cut 2 Genomes on index p (randomly choosen) and swap its parts."""
-    if len(g1) == len(g2):
-        length = len(g1)
+    """Cut 2 Genomes at a random cut_point and swap their tails."""
+    if len(parent1) == len(parent2):
+        length = len(parent1)
     else:
         raise CrossOverException(
             "Genomes has to have the same length, got %d, %d" % (
-                len(g1), len(g2)))
+                len(parent1), len(parent2)))
 
     if length < 2:
-        return g1[:], g2[:]
+        return parent1[:], parent2[:]
 
-    p = make_rng(rng).randint(1, length - 1)
+    cut_point = make_rng(rng).randint(1, length - 1)
 
-    return g1[0:p] + g2[p:length], g2[0:p] + g1[p:length]
+    return (parent1[:cut_point] + parent2[cut_point:],
+            parent2[:cut_point] + parent1[cut_point:])
 
 
 def pmx_single_point(
-    g1: Genome, g2: Genome, rng: Optional[Random] = None, **kwargs
+    parent1: Genome, parent2: Genome, rng: Optional[Random] = None, **kwargs
 ) -> Tuple[Genome, Genome]:
     """
     PMX is a crossover function which consider a Genome as a sequence of
@@ -44,28 +45,28 @@ def pmx_single_point(
 
     This implementation suites very well the TSP problem.
     """
-    if len(g1) == len(g2):
-        length = len(g1)
+    if len(parent1) == len(parent2):
+        length = len(parent1)
     else:
         raise CrossOverException(
             "Genomes has to have the same length, got %d, %d" % (
-                len(g1), len(g2)))
+                len(parent1), len(parent2)))
 
     if length < 2:
-        return g1[:], g2[:]
+        return parent1[:], parent2[:]
 
-    p = make_rng(rng).randint(1, length - 1)
+    cut_point = make_rng(rng).randint(1, length - 1)
 
-    g1child = g1[:]
-    for i in range(p):
-        ans = g1child.index(g2[i])
-        g1child[ans] = g1child[i]
-        g1child[i] = g2[i]
+    child1 = parent1[:]
+    for i in range(cut_point):
+        partner_index = child1.index(parent2[i])
+        child1[partner_index] = child1[i]
+        child1[i] = parent2[i]
 
-    g2child = g2[:]
-    for i in range(p):
-        ans = g2child.index(g1[i])
-        g2child[ans] = g2child[i]
-        g2child[i] = g1[i]
+    child2 = parent2[:]
+    for i in range(cut_point):
+        partner_index = child2.index(parent1[i])
+        child2[partner_index] = child2[i]
+        child2[i] = parent1[i]
 
-    return g1child, g2child
+    return child1, child2

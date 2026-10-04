@@ -19,22 +19,22 @@ Stop = Callable[[State], bool]
 
 
 def max_iterations(n: int) -> Stop:
-    return lambda s: s.iteration >= n
+    return lambda state: state.iteration >= n
 
 
 def max_evaluations(n: int) -> Stop:
-    return lambda s: s.evaluations >= n
+    return lambda state: state.evaluations >= n
 
 
 def max_time(seconds: float) -> Stop:
-    return lambda s: s.elapsed >= seconds
+    return lambda state: state.elapsed >= seconds
 
 
 def target_value(
     value: float, direction: Direction = Direction.MINIMIZE
 ) -> Stop:
-    return lambda s: not better(value, s.best_value, direction)
+    return lambda state: not better(value, state.best_value, direction)
 
 
 def any_of(*stops: Stop) -> Stop:
-    return lambda s: any(stop(s) for stop in stops)
+    return lambda state: any(stop(state) for stop in stops)
