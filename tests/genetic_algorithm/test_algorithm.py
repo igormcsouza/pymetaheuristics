@@ -1,0 +1,154 @@
+from random import Random
+
+import pytest
+
+from pymetaheuristics.core import (
+    Direction, Heuristic, InfeasibleError, Problem, State, any_of,
+    max_evaluations, max_iterations, target_value)
+from pymetaheuristics.genetic_algorithm import genetic_algorithm
+
+
+def make_problem(direction=Direction.MINIMIZE, seed=0, feasible=None):
+    """Genomes of 6 ints in [0, 9]; objective is their sum."""
+    gen = Random(seed)
+    kwargs = {} if feasible is None else {'feasible': feasible}
+    return Problem(
+        generate=lambda: [gen.randint(0, 9) for _ in range(6)],
+        evaluate=sum, direction=direction, **kwargs)
+
+
+def test_satisfies_heuristic_protocol():
+    heuristic: Heuristic = genetic_algorithm
+    result = heuristic(make_problem(), stop=max_iterations(3), rng=1)
+    assert result.iterations == 3
+
+
+def test_same_seed_same_result():
+    def run(seed):
+        return genetic_algorithm(
+            make_problem(seed=seed), stop=max_iterations(10), rng=seed)
+    a, b = run(42), run(42)
+    assert (a.best_solution, a.best_value) == (b.best_solution, b.best_value)
+    assert a.history == b.history
+    assert run(1).history != run(2).history
+
+
+def test_accepts_random_instance():
+    result = genetic_algorithm(
+        make_problem(), stop=max_iterations(2), rng=Random(3))
+    assert result.iterations == 2
+
+
+@pytest.mark.parametrize('direction', list(Direction))
+def test_direction(direction):
+    result = genetic_algorithm(
+        make_problem(direction), stop=max_iterations(40), rng=0,
+        population_size=20, k=5)
+    values = [r['best'] for r in result.history]
+    pick = min if direction is Direction.MINIMIZE else max
+    assert result.best_value == pick(values)
+    assert sum(result.best_solution) == result.best_value
+    # the search moves towards the requested direction
+    assert pick(values[0], result.best_value) == result.best_value
+    assert result.best_value != values[0]
+    for r in result.history:
+        assert pick(r['best'], r['worst']) == r['best']
+        assert sum(r['solution']) == r['best']
+
+
+def test_result_contents():
+    problem = make_problem()
+    calls = 0
+
+    def evaluate(genome):
+        nonlocal calls
+        calls += 1
+        return sum(genome)
+
+    problem = Problem(generate=problem.generate, evaluate=evaluate)
+    result = genetic_algorithm(
+        problem, stop=max_iterations(5), rng=0, population_size=8)
+    assert result.iterations == 5
+    assert len(result.history) == 6
+    assert set(result.history[0]) == {'best', 'mean', 'worst', 'solution'}
+    # one evaluation per genome per generation, selection uses the cache
+    assert result.metadata['evaluations'] == calls == 6 * 8
+    state = result.metadata['termination']
+    assert isinstance(state, State) and state.iteration == 5
+    assert result.elapsed == state.elapsed >= 0
+
+
+def test_stop_conditions():
+    by_evals = genetic_algorithm(
+        make_problem(), stop=max_evaluations(35), rng=0, population_size=10)
+    # stop is checked per generation: may overshoot by one generation
+    assert 35 <= by_evals.metadata['evaluations'] < 45
+    assert by_evals.iterations == 3
+
+    by_target = genetic_algorithm(
+        make_problem(), stop=any_of(max_iterations(500), target_value(5)),
+        rng=0, population_size=20)
+    assert by_target.best_value <= 5
+    assert by_target.iterations < 500
+
+    immediate = genetic_algorithm(
+        make_problem(), stop=max_iterations(0), rng=0)
+    assert immediate.iterations == 0 and len(immediate.history) == 1
+
+
+def test_only_feasible_genomes_are_evaluated():
+    def feasible(genome):
+        return sum(genome) <= 30
+
+    def evaluate(genome):
+        assert feasible(genome), genome
+        return sum(genome)
+
+    base = make_problem(Direction.MAXIMIZE)
+    problem = Problem(generate=base.generate, evaluate=evaluate,
+                      feasible=feasible, direction=Direction.MAXIMIZE)
+    # crossover always breeds infeasible children, mutation cannot fix them
+    result = genetic_algorithm(
+        problem, stop=max_iterations(10), rng=0,
+        crossover=lambda a, b, **kw: ([9] * 6, [9] * 6),
+        mutation=lambda g, **kw: g[:])
+    assert feasible(result.best_solution)
+
+
+def test_repair_fixes_infeasible_children():
+    def feasible(genome):
+        return 0 not in genome
+
+    gen = Random(0)
+    problem = Problem(
+        generate=lambda: [gen.randint(1, 9) for _ in range(4)],
+        evaluate=sum, feasible=feasible)
+    repaired = []
+
+    def repair(genome):
+        repaired.append(genome)
+        return [g or 1 for g in genome]
+
+    result = genetic_algorithm(
+        problem, stop=max_iterations(5), rng=0, repair=repair,
+        crossover=lambda a, b, **kw: ([0] * 4, [0] * 4),
+        mutation=lambda g, **kw: g[:])
+    assert repaired
+    assert result.best_solution == [1, 1, 1, 1]
+
+
+def test_unsatisfiable_problem_raises():
+    problem = make_problem(feasible=lambda g: False)
+    with pytest.raises(InfeasibleError):
+        genetic_algorithm(problem, stop=max_iterations(1), max_tries=3)
+
+
+def test_selection_may_evaluate_new_genomes():
+    def selection(population, fitness, rng=None, **kw):
+        copies = [g[:] for g in population]
+        return sorted(copies, key=fitness)[:2]
+
+    result = genetic_algorithm(
+        make_problem(), stop=max_iterations(3), rng=0, population_size=6,
+        selection=selection)
+    assert result.metadata['evaluations'] > 4 * 6

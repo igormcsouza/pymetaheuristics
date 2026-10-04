@@ -39,19 +39,24 @@ $ pip install pymetaheuristics
 Requires Python 3.9+. For development: `pip install -e .[dev]`, then `pre-commit install`.
 Lint with `ruff check .` and test with `sh scripts/test.sh`.
 
-Import the algorithm model you want to use to solve you problem. Implement the
-needed functions and pass to the model. Train and get the results.
+Describe your problem with a `Problem` and pass it to a heuristic, which
+returns an `OptimizationResult`.
 ```python
-from pymetaheuristics.genetic_algorithm.model import GeneticAlgorithm
+from pymetaheuristics.core import Direction, Problem, max_iterations
+from pymetaheuristics.genetic_algorithm import genetic_algorithm
+from pymetaheuristics.genetic_algorithm.steps.crossovers import (
+    pmx_single_point)
 
-model = GeneticAlgorithm(
-    fitness_function=fitness_function,
-    genome_generator=genome_generator
-)
+problem = Problem(generate=genome_generator, evaluate=fitness_function,
+                  feasible=constraint, direction=Direction.MINIMIZE)
 
-result = model.train(
-    epochs=15, pop_size=10, crossover=pmx_single_point, verbose=True)
+result = genetic_algorithm(
+    problem, stop=max_iterations(15), rng=42, population_size=10,
+    crossover=pmx_single_point)
+result.best_solution, result.best_value, result.history
 ```
+The `GeneticAlgorithm` class still works but is deprecated: it is a thin
+wrapper around `genetic_algorithm`.
 
 Every module has its integration test, which I submit the model for testing
 with very know NP-Hard problems today (Knapsack, tsp, ...). If you want to see
@@ -59,10 +64,10 @@ how it goes, check out the integrations under the model testing folder.
 
 ## Reproducibility
 
-Pass `rng=` (an `int` seed or a `random.Random`) to `train` and it is handed
-to the selection, crossover and mutation steps, so the same seed gives the
-same result. Custom steps receive `rng` as a keyword argument. Limitation: the
-user-supplied `genome_generator` is called without an rng, so seed whatever
+Pass `rng=` (an `int` seed or a `random.Random`) to a heuristic and it is
+handed to the selection, crossover and mutation steps, so the same seed gives
+the same result. Custom steps receive `rng` as a keyword argument. Limitation:
+the problem's `generate` is called without an rng, so seed whatever
 random source it uses yourself (e.g. a seeded `random.Random` in a closure).
 
 ## Adding a heuristic

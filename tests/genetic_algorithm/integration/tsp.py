@@ -1,9 +1,10 @@
 from random import shuffle
 
+from pymetaheuristics.core import Problem, max_iterations
 from pymetaheuristics.utils.distances import euclidian_distance
+from pymetaheuristics.genetic_algorithm import genetic_algorithm
 from pymetaheuristics.genetic_algorithm.steps.crossovers import (
     pmx_single_point)
-from pymetaheuristics.genetic_algorithm.model import GeneticAlgorithm
 from pymetaheuristics.genetic_algorithm.types import Genome
 
 
@@ -36,16 +37,14 @@ def fitness_function(genome: Genome) -> float:
     return fitness
 
 
-model = GeneticAlgorithm(
-    fitness_function=fitness_function,
-    genome_generator=genome_generator
-)
+problem = Problem(generate=genome_generator, evaluate=fitness_function)
 
-result = model.train(
-    epochs=5, pop_size=10, crossover=pmx_single_point, verbose=True)
+result = genetic_algorithm(
+    problem, stop=max_iterations(5), rng=0, population_size=10,
+    crossover=pmx_single_point)
 
-print("Genetic Algorithm result", result, sep="\n")
+print("Genetic Algorithm result", result.best_solution, result.best_value)
 print("Ground Truth", ([2, 4, 3, 0, 1], 210.24), sep="\n")
 
-ans = (round(result[1], 2) - 210.24) / 210.24
+ans = (round(result.best_value, 2) - 210.24) / 210.24
 print(round(ans*100, 2), "%... off the optimal")
