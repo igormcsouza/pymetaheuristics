@@ -18,10 +18,10 @@ def test_better_and_best_of_both_directions():
 
 def test_selection_prefers_best_for_each_direction():
     pop = [[0], [1], [100]]
-    for direction, want in ((MIN, [0]), (MAX, [100])):
+    for direction, want, worst in ((MIN, [0], [100]), (MAX, [100], [0])):
         picked = random_weighted_selection(
             pop, lambda g: g[0], k=200, rng=Random(1), direction=direction)
-        assert picked.count(want) > 100
+        assert picked.count(want) > 3 * picked.count(worst)
 
 
 def test_train_optimizes_in_both_directions():

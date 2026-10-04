@@ -12,6 +12,8 @@ from pymetaheuristics.genetic_algorithm.types import (
     FitnessFunction, Population)
 from pymetaheuristics.utils.rng import make_rng
 
+_SHIFT = 0.1  # weight of the worst genome, as a fraction of the range
+
 
 def random_weighted_selection(
     population: Population,
@@ -28,10 +30,14 @@ def random_weighted_selection(
     # oriented: lower is better for either direction
     fitness = [
         oriented(fitness_function(genome), direction) for genome in population]
-    # lower => higher weight; shift keeps weights > 0
+    # lower => higher weight. Shift by a fraction of the value range (not a
+    # constant) so selection pressure does not depend on the objective's
+    # scale; the shift keeps the worst genome selectable (weight > 0).
+    worst, spread = max(fitness), max(fitness) - min(fitness)
+    weights = [worst - value + _SHIFT * spread for value in fitness]
     selected = make_rng(rng).choices(
         population=population,
-        weights=[max(fitness) - value + 1 for value in fitness],
+        weights=weights if spread > 0 else None,  # all equal: uniform
         k=k
     )
     return [genome[:] for genome in selected]
