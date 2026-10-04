@@ -17,13 +17,9 @@ def random_weighted_selection(
     fitness of each Genome as weights so the most fitted is very likely to be
     choosen, but, still gives room for a little of jumps.
     """
-<<<<<<< HEAD
-    return make_rng(rng).choices(
-=======
     fitness = [fitness_function(genome) for genome in population]
     # minimization: lower fitness => higher weight; shift keeps weights > 0
-    return choices(
->>>>>>> origin/main
+    return make_rng(rng).choices(
         population=population,
         weights=[max(fitness) - f + 1 for f in fitness],
         k=k
