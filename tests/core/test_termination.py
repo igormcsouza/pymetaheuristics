@@ -3,8 +3,9 @@ from pymetaheuristics.core.termination import (
     State, any_of, max_evaluations, max_iterations, max_time, target_value)
 
 
-def state(iteration=0, evaluations=0, elapsed=0.0, best_value=10.0):
-    return State(iteration, evaluations, elapsed, best_value)
+def state(iteration=0, evaluations=0, elapsed=0.0, best_value=10.0,
+          direction=Direction.MINIMIZE):
+    return State(iteration, evaluations, elapsed, best_value, direction)
 
 
 def test_budgets():
@@ -22,6 +23,15 @@ def test_target_value_respects_direction():
     hit = target_value(10.0, Direction.MAXIMIZE)
     assert hit(state(best_value=11.0))
     assert not hit(state(best_value=9.0))
+
+
+def test_target_value_reads_state_direction_unless_overridden():
+    maximize = Direction.MAXIMIZE
+    assert target_value(10.0)(state(best_value=11.0, direction=maximize))
+    assert not target_value(10.0)(state(best_value=9.0, direction=maximize))
+    override = target_value(10.0, Direction.MINIMIZE)
+    assert override(state(best_value=9.0, direction=maximize))
+    assert State(0, 0, 0.0, 1.0).direction is Direction.MINIMIZE
 
 
 def test_any_of():

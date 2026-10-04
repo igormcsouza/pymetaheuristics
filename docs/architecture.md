@@ -12,7 +12,8 @@ pymetaheuristics/core/
   termination.py  State, Stop, stop helpers  when a run ends
   evaluation.py   counting()                how evaluations are counted
   heuristic.py    Heuristic (Protocol)      the contract tying it together
-utils/rng.py      make_rng()                reproducibility
+  loop.py         run()                     the shared iteration loop
+utils/rng.py      make_rng()                reproducibility (re-exported by core)
 ```
 
 ## 1. What interface must every heuristic satisfy?
@@ -64,24 +65,41 @@ and are passed in as keyword arguments. Operators never mutate their inputs.
 
 ## 3. What belongs to an algorithm vs the core engine?
 
-There is no engine object. The loop is part of the algorithm, because the
-loop *is* what differs between families (generations vs a single trajectory
-vs restarts).
+There is no engine object. What differs between families (generations vs a
+single trajectory vs restarts) is one iteration, so an algorithm writes two
+plain functions and hands them to `core.loop.run`:
 
-- **Core:** the vocabulary above. It knows nothing about populations,
-  temperatures or neighborhoods.
-- **Algorithm:** its own loop, state and operators; it builds a `State`
-  each iteration, asks `stop(state)`, and returns an `OptimizationResult`.
+```python
+init(problem)        -> (carry, solution, value, record)
+step(problem, carry) -> (carry, solution, value, record)
 
-If several heuristics later grow the same loop boilerplate, extract a helper
-function then, not before.
+return run(problem, stop=stop, init=init, step=step,
+           extras=lambda carry: {...})   # optional extra metadata
+```
+
+`carry` is whatever the algorithm threads between iterations (current
+solution, population, temperature...). `solution`/`value` is the
+iteration's best candidate. `record` is the iteration's `history` entry;
+`None` records the best value so far.
+
+- **Core (`run`):** evaluation counting, the clock, building `State`,
+  checking `stop` before each step, best-so-far under `problem.direction`,
+  `history` and the `OptimizationResult`. It knows nothing about
+  populations, temperatures or neighborhoods.
+- **Algorithm:** `init`, `step` and its operators.
+
+`simulated_annealing` is built on `run`. A heuristic may still write its own
+loop (see the hill climber under *Reference implementation*), as long as it
+satisfies the Protocol.
 
 ## 4. How are termination conditions represented?
 
 A `Stop` is a predicate `Callable[[State], bool]`. `State` is a frozen
-snapshot (`iteration`, `evaluations`, `elapsed`, `best_value`) that the
-heuristic builds once per iteration. Helpers build stops, and `any_of`
-composes them:
+snapshot (`iteration`, `evaluations`, `elapsed`, `best_value`, `direction`)
+built once per iteration (by `run`, or by a hand-written loop). `direction`
+defaults to `MINIMIZE`; `run` fills it from the problem, so
+`target_value(0.0)` compares in the problem's direction (pass a direction to
+override). Helpers build stops, and `any_of` composes them:
 
 ```python
 from pymetaheuristics.core import (
@@ -93,8 +111,9 @@ stop = any_of(max_iterations(500), max_evaluations(10_000), max_time(2.0),
 
 Users may pass any function of `State`, e.g. a stagnation check that
 closes over its own memory. `all_of` was skipped; add it when someone needs
-it. If a run should report *why* it stopped, the heuristic can put that in
-`OptimizationResult.metadata['termination']`.
+it. Heuristics built on `run` report `metadata['termination'] == 'stop'`
+and the final `State` (the one that satisfied `stop`) as
+`metadata['state']`; inspect it to see which budget was hit.
 
 ## 5. How are objective evaluations counted?
 
@@ -119,8 +138,10 @@ Through the returned `OptimizationResult`:
 - `history` is a list with one record per iteration. A best-value float is
   the default; an algorithm may record a dict of stats instead (e.g. GA mean
   fitness, SA temperature) and documents its shape.
-- `iterations`, `elapsed` and `metadata` (evaluation count, termination
-  reason) cover the rest.
+- `iterations`, `elapsed` and `metadata` cover the rest. Under `run`,
+  `metadata` always has `evaluations`, `termination` (`'stop'`) and `state`
+  (final `State`), plus whatever the algorithm's `extras(carry)` returns
+  (e.g. SA's `final_temperature`).
 
 Live progress callbacks were deliberately left out: the result already holds
 everything, and a `Stop` sees every `State`. Add an `on_iteration` keyword
@@ -130,8 +151,10 @@ when a real use case (progress bars, plotting during a run) shows up.
 
 `tests/core/test_heuristic.py` contains a ~25-line hill climber written
 against this API. It exercises the Protocol, `counting`, composed stops,
-both directions and seeded reproducibility, and is the template to copy when
-adding a new heuristic.
+both directions and seeded reproducibility. It deliberately writes its own
+loop to document the bare Protocol; for a new heuristic, prefer `run` and
+copy `simulated_annealing` in
+`pymetaheuristics/simulated_annealing/annealing.py` (an `init`/`step` pair).
 
 For a population-based heuristic, `genetic_algorithm` in
 `pymetaheuristics/genetic_algorithm/algorithm.py` is the full reference: one
