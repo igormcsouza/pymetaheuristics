@@ -153,3 +153,12 @@ def test_genetic_algorithm_model_load_history_unexpected_error():
     for history in ([1], {0: 1}):  # no .keys() / entry without .keys()
         with pytest.raises(LoadHistoryException):
             ga_model.load_history(history)  # type: ignore
+
+
+def test_genetic_algorithm_model_load_history_bad_args():
+    ga_model = GeneticAlgorithm(
+        fitness_function=sum, genome_generator=lambda: [1])
+    entry = {"runs": [], "best": ([1], 1.0), "elapsed": 0.0}
+    for args in ({"epochs": 1}, None):
+        with pytest.raises(LoadHistoryException):
+            ga_model.load_history({0: {**entry, "args": args}})  # type: ignore
