@@ -45,3 +45,11 @@ def test_penalty_minimize_and_maximize():
         assert q.evaluate(12) == bad
         assert q.feasible(12) is True
         assert p.feasible(12) is False
+
+
+def test_penalty_composes_with_replace_for_generate():
+    from dataclasses import replace
+    p = Problem(lambda: 0, lambda x: x, lambda x: x <= 10, Direction.MINIMIZE)
+    q = replace(penalty(p, lambda x: max(0, x - 10)), generate=lambda: 7)
+    assert q.generate() == 7
+    assert q.evaluate(12) == 14

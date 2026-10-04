@@ -7,7 +7,7 @@ from pymetaheuristics.core import (
     reject)
 from pymetaheuristics.simulated_annealing.cooling import (
     Cooling, geometric_cooling)
-from pymetaheuristics.simulated_annealing.neighborhoods import (
+from pymetaheuristics.neighborhoods import (
     Neighbor, swap_neighbor)
 from pymetaheuristics.utils.rng import make_rng
 

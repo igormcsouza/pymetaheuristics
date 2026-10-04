@@ -6,7 +6,8 @@ non-mutating operator), or a Problem, so no strategy is hard-coded.
 from dataclasses import replace
 from typing import Any, Callable, Optional
 
-from pymetaheuristics.core.problem import Direction, Problem
+from pymetaheuristics.core.direction import oriented
+from pymetaheuristics.core.problem import Problem
 
 
 class InfeasibleError(RuntimeError):
@@ -46,10 +47,13 @@ def penalty(
     problem: Problem, penalty_fn: Callable[[Any], float]
 ) -> Problem:
     """Problem whose evaluate is worsened by `penalty_fn(solution)` (>= 0,
-    zero when feasible); infeasible solutions are then allowed."""
-    sign = 1 if problem.direction is Direction.MINIMIZE else -1
+    zero when feasible); infeasible solutions are then allowed.
 
+    `generate` is intentionally left unchanged. To also change it, compose:
+    ``dataclasses.replace(penalty(p, f), generate=g)``.
+    """
     def evaluate(solution):
-        return problem.evaluate(solution) + sign * penalty_fn(solution)
+        return problem.evaluate(solution) + oriented(
+            penalty_fn(solution), problem.direction)
 
     return replace(problem, evaluate=evaluate, feasible=lambda s: True)
