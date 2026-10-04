@@ -117,3 +117,22 @@ def _seeded_run(seed):
 def test_genetic_algorithm_same_seed_same_result():
     assert _seeded_run(42) == _seeded_run(42)
     assert _seeded_run(1) != _seeded_run(2)
+
+
+def test_genetic_algorithm_unsatisfiable_constraint_raises():
+    import pytest
+    from pymetaheuristics.core import InfeasibleError
+    ga_model = GeneticAlgorithm(
+        fitness_function=sum, genome_generator=lambda: [1],
+        constraints=[lambda x: False], max_tries=3)
+    with pytest.raises(InfeasibleError):
+        ga_model.train(epochs=1, pop_size=4)
+
+
+def test_genetic_algorithm_keeps_parent_when_mutation_infeasible():
+    ga_model = GeneticAlgorithm(
+        fitness_function=sum, genome_generator=lambda: [1, 1],
+        constraints=[lambda x: 1 in x], max_tries=3)
+    best, _ = ga_model.train(
+        epochs=2, pop_size=4, mutation=lambda g, **kw: [0, 0])
+    assert best == [1, 1]

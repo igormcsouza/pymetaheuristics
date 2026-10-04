@@ -35,3 +35,13 @@ def test_train_optimizes_in_both_directions():
 
     assert run(MIN) <= 4
     assert run(MAX) >= 16
+
+
+def test_maximize_respects_constraints():
+    rng = Random(7)
+    ga = GeneticAlgorithm(
+        fitness_function=sum,
+        genome_generator=lambda: [rng.randint(0, 10) for _ in range(2)],
+        constraints=[lambda g: sum(g) <= 12], direction=MAX)
+    best = ga.train(30, 20, rng=3, k=4)[1]
+    assert 10 <= best <= 12
