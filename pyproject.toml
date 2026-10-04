@@ -21,6 +21,9 @@ dependencies = []
 
 [dependency-groups]
 dev = ["pytest", "pytest-cov", "ruff", "pre-commit"]
+docs = [
+    "mkdocs>=1.6.1",
+]
 experiments = [
     "matplotlib>=3.11.2",
 ]
