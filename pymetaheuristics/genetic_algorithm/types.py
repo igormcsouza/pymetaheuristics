@@ -1,4 +1,4 @@
-from typing import Any, Callable, Dict, List, Tuple, Union
+from typing import Any, Callable, List, Tuple
 
 
 # Variable Types
@@ -13,15 +13,3 @@ SelectionFunction = Callable[
     [Population, FitnessFunction, Any], Population]
 CrossOverFunction = Callable[[Genome, Genome], Tuple[Genome, Genome]]
 MutationFunction = Callable[[Genome, Any], Genome]
-
-# Model variables
-GeneticAlgorithmHistory = Dict[
-    float, Dict[
-        str, Union[
-            List[Tuple[List[Any], float]],
-            Tuple[List[Any], float],
-            float,
-            Dict[str, Union[str, int, str, bool, Dict[str, Any]]]
-        ]
-    ]
-]

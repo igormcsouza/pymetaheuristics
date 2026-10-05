@@ -113,5 +113,4 @@ Switching heuristics changes only the call:
 - [Extending](extending.md): write your own operator or heuristic.
 - [Reference](reference/index.md): the API, from the docstrings.
 - [Architecture](architecture.md): how the core is put together.
-- [Release notes](release-notes.md): what changed, and moving off the deprecated
-  `GeneticAlgorithm` class.
+- [Release notes](release-notes.md): what changed between versions.
