@@ -2,8 +2,11 @@
 
 The library has no base classes and no registries. Operators, stops and
 heuristics are all plain functions, and you pass yours where the built-in
-ones would go. A custom function must not modify its input. It should
-return a new solution.
+ones would go.
+
+!!! warning
+    A custom function must not modify its input. It should return a new
+    solution.
 
 ## Operator contracts
 

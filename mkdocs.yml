@@ -1,19 +1,126 @@
 site_name: pymetaheuristics
 site_description: Metaheuristics for optimization problems in plain Python
+site_author: Igor Souza
 site_url: https://igormcsouza.github.io/pymetaheuristics/
+
+repo_name: igormcsouza/pymetaheuristics
 repo_url: https://github.com/igormcsouza/pymetaheuristics
 edit_uri: edit/main/docs/
-theme: mkdocs
+
+theme:
+  name: material
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.indexes
+    - navigation.path
+    - navigation.top
+    - navigation.footer
+    - navigation.instant
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    - content.tabs.link
+    - content.action.edit
+  palette:
+    - scheme: default
+      primary: green
+      accent: green
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+    - scheme: slate
+      primary: green
+      accent: green
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+
+extra:
+  social:
+    - icon: fontawesome/brands/linkedin
+      link: https://www.linkedin.com/in/igormcsouza/
+      name: LinkedIn
+    - icon: fontawesome/brands/github
+      link: https://github.com/igormcsouza
+      name: GitHub
+    - icon: fontawesome/solid/globe
+      link: https://igormcsouza.github.io/
+      name: Personal Website
+
+copyright: Copyright &copy; 2025-2026 Igor Souza
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            docstring_style: google
+            show_source: false
+
+markdown_extensions:
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - admonition
+  - pymdownx.details
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.arithmatex:
+      generic: true
+  - footnotes
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+
 nav:
   - Home: index.md
-  - User guide: guide.md
-  - Worked examples: examples.md
-  - Extending: extending.md
-  - Architecture: architecture.md
-  - Benchmarks: benchmarks.md
-  - Experiments: experiments.md
-  - Migrating from 0.1: migrating.md
-  - Releasing: releasing.md
+  - Tutorial:
+      - tutorial/index.md
+      - Problem and direction: tutorial/problem.md
+      - Constraints: tutorial/constraints.md
+      - Stopping: tutorial/stopping.md
+      - Operators: tutorial/operators.md
+      - Genetic Algorithm: tutorial/genetic-algorithm.md
+      - Simulated Annealing: tutorial/simulated-annealing.md
+      - Results and history: tutorial/results.md
+      - Reproducibility: tutorial/reproducibility.md
+  - Examples: examples.md
+  - Advanced:
+      - Genetic Algorithm in depth: algorithms/genetic-algorithm.md
+      - Simulated Annealing in depth: algorithms/simulated-annealing.md
+      - Extending: extending.md
+      - Architecture: architecture.md
+  - Reference:
+      - reference/index.md
+      - Core: reference/core.md
+      - Genetic Algorithm: reference/genetic-algorithm.md
+      - Simulated Annealing: reference/simulated-annealing.md
+      - Neighborhoods: reference/neighborhoods.md
+      - Benchmarks: reference/benchmarks.md
+  - Project:
+      - Benchmark suite: benchmarks.md
+      - Experiments: experiments.md
+      - Release notes: release-notes.md
+      - Releasing: releasing.md
+
 validation:
   links:
     anchors: warn

@@ -57,14 +57,14 @@ The documentation lives in [docs/](docs/). Start with [docs/index.md](docs/index
 or build the site locally with `uv run --group docs mkdocs serve`. It
 covers:
 
-- [User guide](docs/guide.md): problems, directions, constraints, both
+- [Tutorial](docs/tutorial/index.md): problems, directions, constraints, both
   heuristics, results and history.
 - [Worked examples](docs/examples.md): Knapsack and TSP.
 - [Extending](docs/extending.md): custom operators and heuristics, plus
   the runnable [examples/](examples/).
 - [Architecture](docs/architecture.md), [benchmarks](docs/benchmarks.md),
   [experiments](docs/experiments.md).
-- [Migrating from 0.1](docs/migrating.md): the `GeneticAlgorithm` class is
+- [Release notes](docs/release-notes.md): the `GeneticAlgorithm` class is
   deprecated.
 
 ## Development

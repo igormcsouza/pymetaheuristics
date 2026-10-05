@@ -65,17 +65,16 @@ for name, result in [('GA', ga), ('SA', sa)]:
     assert result.best_value == 295  # optimum, by brute force over 2^10
 ```
 
-Notes:
-
-- `generate` only produces feasible packings, so no start is ever rejected.
-  Bit flips and crossover can still overfill the knapsack. The GA retries
-  such mutants and replaces children that stay infeasible. SA redraws
-  infeasible neighbors.
-- This instance is also available as `get('knapsack-10')` in
-  `pymetaheuristics.benchmarks`, and `knapsack(values, weights, capacity)`
-  builds other instances. See [Benchmarks](benchmarks.md).
-- [User guide: constraints](guide.md#constraints-and-feasibility) shows the
-  same problem solved with repair and with a penalty.
+!!! note
+    - `generate` only produces feasible packings, so no start is ever rejected.
+      Bit flips and crossover can still overfill the knapsack. The GA retries
+      such mutants and replaces children that stay infeasible. SA redraws
+      infeasible neighbors.
+    - This instance is also available as `get('knapsack-10')` in
+      `pymetaheuristics.benchmarks`, and `knapsack(values, weights, capacity)`
+      builds other instances. See [Benchmarks](benchmarks.md).
+    - [Tutorial: constraints](tutorial/constraints.md) shows the
+      same problem solved with repair and with a penalty.
 
 ## Travelling Salesman (minimize, permutations)
 
@@ -131,18 +130,17 @@ for name, result in [('GA', ga), ('SA', sa)]:
     assert math.isclose(result.best_value, OPTIMUM)
 ```
 
-Notes:
-
-- `pmx_single_point` and `two_opt_neighbor` always return permutations, so
-  `feasible` only acts as a safety net. With a crossover that does not
-  preserve permutations, such as `single_point_crossover`, infeasible
-  children would be replaced every generation and the GA would degrade into
-  random search.
-- `target_value` ends the run as soon as the optimum is reached.
-  `metadata['evaluations']` shows how many evaluations each heuristic
-  needed.
-- `tsp(cities)` in `pymetaheuristics.benchmarks` builds the same `Problem`
-  from a list of points.
+!!! note
+    - `pmx_single_point` and `two_opt_neighbor` always return permutations, so
+      `feasible` only acts as a safety net. With a crossover that does not
+      preserve permutations, such as `single_point_crossover`, infeasible
+      children would be replaced every generation and the GA would degrade into
+      random search.
+    - `target_value` ends the run as soon as the optimum is reached.
+      `metadata['evaluations']` shows how many evaluations each heuristic
+      needed.
+    - `tsp(cities)` in `pymetaheuristics.benchmarks` builds the same `Problem`
+      from a list of points.
 
 To compare the two runs visually, plot `best_so_far` as shown in
-[Results and history](guide.md#results-and-history).
+[Results and history](tutorial/results.md).
