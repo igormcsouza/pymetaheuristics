@@ -10,7 +10,8 @@ from typing import List
 from pymetaheuristics.core.problem import Direction, Problem
 
 
-def knapsack(values: List[float], weights: List[float], capacity: float) -> Problem:
+def knapsack(values: List[float], weights: List[float],
+             capacity: float) -> Problem:
     n = len(values)
 
     def total(solution, data):

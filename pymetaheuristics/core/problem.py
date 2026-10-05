@@ -1,6 +1,6 @@
 from dataclasses import dataclass
-from random import Random
 from enum import Enum
+from random import Random
 from typing import Any, Callable
 
 
