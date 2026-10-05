@@ -1,11 +1,10 @@
 from random import Random
 
-from pymetaheuristics.core import Direction, best_of, better
+from pymetaheuristics.core import Direction, best_of, better, oriented
 from pymetaheuristics.genetic_algorithm.steps.selections import (
     random_weighted_selection)
 
 MIN, MAX = Direction.MINIMIZE, Direction.MAXIMIZE
-
 
 def test_better_and_best_of_both_directions():
     assert better(1, 2, MIN) and not better(2, 1, MIN)
@@ -18,6 +17,7 @@ def test_better_and_best_of_both_directions():
 def test_selection_prefers_best_for_each_direction():
     pop = [[0], [1], [100]]
     for direction, want, worst in ((MIN, [0], [100]), (MAX, [100], [0])):
+        scores = [oriented(g[0], direction) for g in pop]
         picked = random_weighted_selection(
-            pop, lambda g: g[0], k=200, rng=Random(1), direction=direction)
+            pop, scores, Random(1), k=200)
         assert picked.count(want) > 3 * picked.count(worst)

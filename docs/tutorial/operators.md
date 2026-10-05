@@ -17,22 +17,28 @@ operators are:
 
 `pymetaheuristics.simulated_annealing` re-exports the three neighborhoods.
 
-A neighborhood is `neighbor(solution, rng)`, and a GA mutation is
-`mutation(genome, rng=..., **kwargs)`. To reuse a neighborhood as a
-mutation, adapt it in one line:
+A neighborhood is `neighbor(solution, rng)`, and a GA mutation has the
+same shape, `mutation(genome, rng)`, so a neighborhood plugs straight in as `mutation=`, and knobs are bound
+with `functools.partial`:
 
 ```python
+from functools import partial
+from random import Random
+
+from pymetaheuristics.genetic_algorithm.steps.mutations import inter_mutation
 from pymetaheuristics.neighborhoods import bit_flip_neighbor
 
-
-def bit_flip_mutation(genome, rng, **kwargs):
-    return bit_flip_neighbor(genome, rng)
+mutation = partial(inter_mutation, num_swaps=3)
+print(bit_flip_neighbor([0, 0, 0], Random(0)), mutation([1, 2, 3], Random(0)))
 ```
+
+The other GA operators are `selection(population, scores, rng)` (scores are
+oriented, lower is better) and `crossover(parent1, parent2, rng)`.
 
 ## Recap
 
 - Operators are plain functions that never modify their inputs.
-- Reuse a neighborhood as a GA mutation with a one-line adapter.
+- A neighborhood is a valid GA mutation as is.
 
 Next: [Genetic Algorithm](genetic-algorithm.md) or
 [Simulated Annealing](simulated-annealing.md).

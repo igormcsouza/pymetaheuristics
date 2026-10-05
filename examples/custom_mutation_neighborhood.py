@@ -1,7 +1,8 @@
 """Custom GA mutation and SA neighbor: the same insertion move.
 
-GA contract:  mutation(genome, rng=, **kwargs) -> new genome.
+GA contract:  mutation(genome, rng) -> new genome.
 SA contract:  neighbor(solution, rng) -> new solution.
+The shapes are the same, so one function serves both.
 Neither may mutate its input.
 """
 from pymetaheuristics.benchmarks import tsp
@@ -17,16 +18,12 @@ def insertion_neighbor(solution, rng):
     return new
 
 
-def insertion_mutation(genome, rng, **kwargs):
-    return insertion_neighbor(genome, rng)
-
-
 def main(iterations=200, seed=3):
     cities = [[0, 0], [1, 0], [2, 0], [2, 1], [2, 2], [1, 2], [0, 2], [0, 1]]
     problem = tsp(cities)
     ga = genetic_algorithm(
         problem, stop=max_iterations(iterations // 5), rng=seed,
-        mutation=insertion_mutation)
+        mutation=insertion_neighbor)
     sa = simulated_annealing(
         problem, stop=max_iterations(iterations), rng=seed,
         neighbor=insertion_neighbor)

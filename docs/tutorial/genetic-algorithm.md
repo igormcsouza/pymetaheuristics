@@ -11,7 +11,7 @@ ga = genetic_algorithm(
     stop=max_iterations(30),
     rng=1,
     population_size=20,
-    mutation=bit_flip_mutation,
+    mutation=bit_flip_neighbor,
     repair=drop_heaviest,
 )
 print(ga.best_solution, ga.best_value)
@@ -37,7 +37,9 @@ Each generation:
 | `mutation` | `inter_mutation` |
 | `repair` | `None` |
 | `max_tries` | `1000` |
-| `**operator_kwargs` | forwarded to every operator (with `rng`), e.g. `num_swaps=3` for `inter_mutation`; custom operators must accept `**kwargs` |
+
+To set an operator's knob, bind it with `functools.partial`, for example
+`mutation=partial(inter_mutation, num_swaps=3)`.
 
 !!! warning
     Each generation costs `population_size` evaluations. `stop` is checked

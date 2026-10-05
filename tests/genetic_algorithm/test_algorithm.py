@@ -1,11 +1,14 @@
+from functools import partial
 from random import Random
 
 import pytest
 
 from pymetaheuristics.core import (
     Direction, Heuristic, InfeasibleError, Problem, State, any_of,
-    max_evaluations, max_iterations, target_value)
+    max_evaluations, max_iterations, oriented, target_value)
 from pymetaheuristics.genetic_algorithm import genetic_algorithm
+from pymetaheuristics.genetic_algorithm.steps.selections import (
+    random_weighted_selection)
 
 
 def make_problem(direction=Direction.MINIMIZE, seed=0, feasible=None):
@@ -42,7 +45,8 @@ def test_accepts_random_instance():
 def test_direction(direction):
     result = genetic_algorithm(
         make_problem(direction), stop=max_iterations(40), rng=0,
-        population_size=20, k=5)
+        population_size=20,
+        selection=partial(random_weighted_selection, k=5))
     values = [r['best'] for r in result.history]
     pick = min if direction is Direction.MINIMIZE else max
     assert result.best_value == pick(values)
@@ -71,7 +75,7 @@ def test_result_contents():
     assert len(result.history) == 6
     assert set(result.history[0]) == {
         'best', 'mean', 'worst', 'solution', 'best_so_far'}
-    # one evaluation per genome per generation, selection uses the cache
+    # one evaluation per genome per generation, selection reuses the scores
     assert result.metadata['evaluations'] == calls == 6 * 8
     assert result.metadata['termination'] == 'stop'
     state = result.metadata['state']
@@ -121,8 +125,8 @@ def test_only_feasible_genomes_are_evaluated():
     # crossover always breeds infeasible children, mutation cannot fix them
     result = genetic_algorithm(
         problem, stop=max_iterations(10), rng=0,
-        crossover=lambda a, b, **kw: ([9] * 6, [9] * 6),
-        mutation=lambda g, **kw: g[:])
+        crossover=lambda a, b, rng: ([9] * 6, [9] * 6),
+        mutation=lambda g, rng: g[:])
     assert feasible(result.best_solution)
 
 
@@ -141,8 +145,8 @@ def test_repair_fixes_infeasible_children():
 
     result = genetic_algorithm(
         problem, stop=max_iterations(5), rng=0, repair=repair,
-        crossover=lambda a, b, **kw: ([0] * 4, [0] * 4),
-        mutation=lambda g, **kw: g[:])
+        crossover=lambda a, b, rng: ([0] * 4, [0] * 4),
+        mutation=lambda g, rng: g[:])
     assert repaired
     assert result.best_solution == [1, 1, 1, 1]
 
@@ -153,15 +157,19 @@ def test_unsatisfiable_problem_raises():
         genetic_algorithm(problem, stop=max_iterations(1), max_tries=3)
 
 
-def test_selection_may_evaluate_new_genomes():
-    def selection(population, fitness, rng=None, **kw):
-        copies = [g[:] for g in population]
-        return sorted(copies, key=fitness)[:2]
+@pytest.mark.parametrize('direction', list(Direction))
+def test_selection_gets_oriented_scores(direction):
+    seen = []
 
-    result = genetic_algorithm(
-        make_problem(), stop=max_iterations(3), rng=0, population_size=6,
-        selection=selection)
-    assert result.metadata['evaluations'] > 4 * 6
+    def selection(population, scores, rng):
+        seen.append((population, scores))
+        return population[:2]
+
+    problem = make_problem(direction)
+    genetic_algorithm(problem, stop=max_iterations(2), rng=0,
+                      population_size=6, selection=selection)
+    for population, scores in seen:
+        assert scores == [oriented(sum(g), direction) for g in population]
 
 
 @pytest.mark.parametrize('direction', list(Direction))

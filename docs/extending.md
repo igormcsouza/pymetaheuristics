@@ -14,17 +14,19 @@ ones would go.
 |---|---|---|
 | Neighborhood | `neighbor(solution, rng) -> solution` | `simulated_annealing(neighbor=...)` |
 | Cooling | `cooling(temperature) -> temperature` | `simulated_annealing(cooling=...)` |
-| Selection | `selection(population, fitness, rng=, direction=, **kwargs) -> parents` | `genetic_algorithm(selection=...)` |
-| Crossover | `crossover(parent1, parent2, rng=, **kwargs) -> (child1, child2)` | `genetic_algorithm(crossover=...)` |
-| Mutation | `mutation(genome, rng=, **kwargs) -> genome` | `genetic_algorithm(mutation=...)` |
+| Selection | `selection(population, scores, rng) -> parents` | `genetic_algorithm(selection=...)` |
+| Crossover | `crossover(parent1, parent2, rng) -> (child1, child2)` | `genetic_algorithm(crossover=...)` |
+| Mutation | `mutation(genome, rng) -> genome` | `genetic_algorithm(mutation=...)` |
 | Repair | `repair(genome) -> genome` | `genetic_algorithm(repair=...)` |
 | Stop | `stop(state) -> bool` | `stop=` of any heuristic |
 
-GA operators get `rng` plus any extra keyword arguments given to
-`genetic_algorithm`. That is why they must accept `**kwargs`. The GA breeds
-the first two parents that selection returns. Selection gets `direction` so
-it can tell better from worse. Use `oriented(value, direction)` (lower is
-better) instead of branching on the direction yourself.
+GA operators are called with `rng` as the last positional argument. Bind
+extra knobs with `functools.partial`, for example
+`mutation=partial(inter_mutation, num_swaps=3)`. A mutation has the same
+shape as an SA `neighbor`, so one function serves both. The GA breeds the
+first two parents that selection returns. `scores` holds one value per
+genome, already oriented so that lower is better in both directions: a
+selection never needs the problem's direction.
 
 Runnable examples, all tested in `tests/examples`:
 

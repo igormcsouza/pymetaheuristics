@@ -1,6 +1,6 @@
 """Custom GA crossover: order crossover (OX) for permutations (TSP).
 
-Contract: crossover(parent1, parent2, rng=, **kwargs) -> (child1, child2).
+Contract: crossover(parent1, parent2, rng) -> (child1, child2).
 """
 from pymetaheuristics.benchmarks import tsp
 from pymetaheuristics.core import max_iterations
@@ -14,7 +14,7 @@ def _ox(a, b, i, j):
     return [a[k] if i <= k < j else next(rest) for k in range(len(a))]
 
 
-def order_crossover(g1, g2, rng, **kwargs):
+def order_crossover(g1, g2, rng):
     i, j = sorted(rng.sample(range(len(g1) + 1), 2))
     return _ox(g1, g2, i, j), _ox(g2, g1, i, j)
 
