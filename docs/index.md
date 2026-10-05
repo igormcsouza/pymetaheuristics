@@ -46,13 +46,10 @@ Find a short closed tour through five points:
 
 ```python
 import math
-from random import Random
-
 from pymetaheuristics.core import Problem, max_iterations
 from pymetaheuristics.simulated_annealing import simulated_annealing
 
 cities = [(0, 0), (0, 2), (3, 2), (3, 0), (1, 1)]
-seeded = Random(0)
 
 
 def tour_length(tour):
@@ -61,7 +58,7 @@ def tour_length(tour):
 
 
 problem = Problem(
-    generate=lambda: seeded.sample(range(len(cities)), len(cities)),
+    generate=lambda rng: rng.sample(range(len(cities)), len(cities)),
     evaluate=tour_length,
 )  # direction defaults to Direction.MINIMIZE
 

@@ -7,6 +7,7 @@ One generation is an explicit pipeline of small steps::
 
 Every genome that is evaluated (and so can become the best) is feasible.
 """
+from functools import partial
 from random import Random
 from statistics import fmean
 from typing import Any, Callable, Dict, List, Optional, Tuple, Union
@@ -71,8 +72,7 @@ def genetic_algorithm(
     ('stop') and ``state`` (the final ``State``), as for every heuristic
     built on ``core.run``.
 
-    ``problem.generate`` is called without an rng; seed its random source
-    yourself for fully reproducible runs.
+    ``problem.generate`` is called with the run's rng.
     """
     rng = make_rng(rng)
 
@@ -92,7 +92,8 @@ def genetic_algorithm(
             offspring, problem.feasible, repair, generate)
         return _evaluated(problem, population, best, best_value)
 
-    generate = reject(problem.generate, problem.feasible, max_tries)
+    generate = partial(
+        reject(problem.generate, problem.feasible, max_tries), rng)
     return run(problem, stop=stop, init=init, step=step)
 
 

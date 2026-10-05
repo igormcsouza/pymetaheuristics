@@ -23,7 +23,7 @@ def insertion_mutation(genome, rng, **kwargs):
 
 def main(iterations=200, seed=3):
     cities = [[0, 0], [1, 0], [2, 0], [2, 1], [2, 2], [1, 2], [0, 2], [0, 1]]
-    problem = tsp(cities, seed)
+    problem = tsp(cities)
     ga = genetic_algorithm(
         problem, stop=max_iterations(iterations // 5), rng=seed,
         mutation=insertion_mutation)

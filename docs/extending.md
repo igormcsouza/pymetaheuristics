@@ -89,19 +89,17 @@ Here is a random restart search built this way, with an optional
 `extras` function that adds to `metadata`:
 
 ```python
-from random import Random
-
 from pymetaheuristics.core import (
-    Problem, any_of, max_iterations, reject, run)
+    Problem, any_of, make_rng, max_iterations, reject, run)
 
 
 def random_search(problem: Problem, *, stop, rng=None, max_tries=1000):
-    """Sample fresh feasible solutions and keep the best. ``rng`` is unused:
-    ``problem.generate`` draws its own randomness."""
+    """Sample fresh feasible solutions and keep the best."""
+    rng = make_rng(rng)
     generate = reject(problem.generate, problem.feasible, max_tries)
 
     def sample(problem, carry):
-        solution = generate()
+        solution = generate(rng)
         value = problem.evaluate(solution)
         return carry + 1, solution, value, None
 
@@ -109,8 +107,7 @@ def random_search(problem: Problem, *, stop, rng=None, max_tries=1000):
                extras=lambda samples: {'samples': samples})
 
 
-seeded = Random(0)
-problem = Problem(generate=lambda: [seeded.random()],
+problem = Problem(generate=lambda rng: [rng.random()],
                   evaluate=lambda x: (x[0] - 0.5) ** 2)
 result = random_search(
     problem, stop=any_of(max_iterations(100), stagnation(10)))

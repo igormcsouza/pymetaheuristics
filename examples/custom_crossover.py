@@ -21,7 +21,7 @@ def order_crossover(g1, g2, rng, **kwargs):
 
 def main(generations=40, seed=2):
     cities = [[0, 0], [1, 0], [2, 0], [2, 1], [2, 2], [1, 2], [0, 2], [0, 1]]
-    problem = tsp(cities, seed)
+    problem = tsp(cities)
     result = genetic_algorithm(
         problem, stop=max_iterations(generations), rng=seed,
         population_size=20, crossover=order_crossover)

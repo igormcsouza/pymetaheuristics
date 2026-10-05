@@ -16,7 +16,7 @@ def restart_hill_climbing(problem, *, stop, rng=None,
     rng = make_rng(rng)
 
     def fresh(problem):
-        current = problem.generate()
+        current = problem.generate(rng)
         return current, problem.evaluate(current), 0
 
     def init(problem):
@@ -41,7 +41,7 @@ def restart_hill_climbing(problem, *, stop, rng=None,
 
 def main(evaluations=500, seed=5):
     cities = [[0, 0], [1, 0], [2, 0], [2, 1], [2, 2], [1, 2], [0, 2], [0, 1]]
-    problem = tsp(cities, seed)
+    problem = tsp(cities)
     result = restart_hill_climbing(
         problem, stop=max_evaluations(evaluations), rng=seed)
     print('restart hill climbing:', round(result.best_value, 3),

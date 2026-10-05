@@ -3,16 +3,11 @@
 Same seed, same result.
 
 Pass `rng=` (an `int` seed or a `random.Random`) to make a run
-reproducible. The heuristic passes it to every operator. `problem.generate`
-is called **without** an rng.
-
-!!! warning
-    Seed the random source of `generate` yourself, like the
-    `seeded = Random(0)` used above, or runs will differ.
+reproducible. The heuristic passes it to every operator, including
+`problem.generate(rng)`, so nothing else needs seeding.
 
 ## Recap
 
-- `rng=` seeds the heuristic and its operators.
-- Seed `generate`'s own randomness too.
+- `rng=` seeds the heuristic, its operators and `generate`.
 
 Next: [worked examples](../examples.md).

@@ -11,8 +11,6 @@ Pick items to maximize their total value without going over the capacity.
 A solution is a list of bits, with 1 meaning the item is packed.
 
 ```python
-from random import Random
-
 from pymetaheuristics.core import Direction, Problem, max_iterations
 from pymetaheuristics.genetic_algorithm import genetic_algorithm
 from pymetaheuristics.neighborhoods import bit_flip_neighbor
@@ -22,17 +20,16 @@ from pymetaheuristics.simulated_annealing import (
 VALUES = [55, 10, 47, 5, 4, 50, 8, 61, 85, 87]
 WEIGHTS = [95, 4, 60, 32, 23, 72, 80, 62, 65, 46]
 CAPACITY = 269
-seeded = Random(0)
 
 
 def total(data, packing):
     return sum(d for d, bit in zip(data, packing) if bit)
 
 
-def random_packing():
+def random_packing(rng):
     """Add items in random order while they fit: always feasible."""
     packing = [0] * len(VALUES)
-    for i in seeded.sample(range(len(VALUES)), len(VALUES)):
+    for i in rng.sample(range(len(VALUES)), len(VALUES)):
         packing[i] = 1
         if total(WEIGHTS, packing) > CAPACITY:
             packing[i] = 0
@@ -83,8 +80,6 @@ closed tour. A solution is a permutation of city indices.
 
 ```python
 import math
-from random import Random
-
 from pymetaheuristics.core import (
     Problem, any_of, max_evaluations, target_value)
 from pymetaheuristics.genetic_algorithm import genetic_algorithm
@@ -96,7 +91,6 @@ from pymetaheuristics.simulated_annealing import (
 
 CITIES = [(x, y) for x in range(3) for y in range(3)]  # a 3x3 grid
 OPTIMUM = 8 + math.sqrt(2)
-seeded = Random(0)
 
 
 def tour_length(tour):
@@ -105,7 +99,7 @@ def tour_length(tour):
 
 
 problem = Problem(
-    generate=lambda: seeded.sample(range(len(CITIES)), len(CITIES)),
+    generate=lambda rng: rng.sample(range(len(CITIES)), len(CITIES)),
     evaluate=tour_length,
     feasible=lambda tour: sorted(tour) == list(range(len(CITIES))),
 )  # Direction.MINIMIZE is the default

@@ -32,7 +32,7 @@ def simulated_annealing(
 
     def init(problem):
         current = reject(problem.generate, problem.feasible,
-                         max_start_tries)()
+                         max_start_tries)(rng)
         value = problem.evaluate(current)
         return (current, value, initial_temperature), current, value, None
 

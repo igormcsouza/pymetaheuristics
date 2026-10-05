@@ -14,11 +14,13 @@ produce infeasible solutions.
     `InfeasibleError`.
 
     ```python
+    from random import Random
+
     from pymetaheuristics.core import reject
 
     feasible_packing = reject(knapsack.generate, knapsack.feasible,
                               max_tries=1000)
-    assert knapsack.feasible(feasible_packing())
+    assert knapsack.feasible(feasible_packing(Random(0)))
     ```
 
 === "Repair"
@@ -42,7 +44,7 @@ produce infeasible solutions.
 
     repaired_generate = repair(knapsack.generate, drop_heaviest,
                                feasible=knapsack.feasible)
-    assert knapsack.feasible(repaired_generate())
+    assert knapsack.feasible(repaired_generate(Random(0)))
     ```
 
 === "Penalty"

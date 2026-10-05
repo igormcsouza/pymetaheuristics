@@ -7,11 +7,9 @@ are comparable. No plotting here: this module needs only the library.
 """
 import csv
 import json
-import types
 from dataclasses import replace
 from functools import partial
 from pathlib import Path
-from random import Random
 from statistics import fmean, pstdev
 from time import perf_counter
 
@@ -54,9 +52,10 @@ def as_mutation(move):
 def random_search(problem, *, stop, rng=None):
     """Baseline: evaluate fresh feasible solutions until ``stop``."""
     generate = reject(problem.generate, problem.feasible)
+    rng = core.make_rng(rng)
 
     def sample(problem, carry=None):
-        candidate = generate()
+        candidate = generate(rng)
         return None, candidate, problem.evaluate(candidate), None
 
     return core.run(problem, stop=stop, init=sample, step=sample)
@@ -94,24 +93,6 @@ def configs(family_name, budget):
 
 # --- running ----------------------------------------------------------------
 
-def _seeded(problem, seed):
-    """Copy of ``problem`` whose ``generate`` draws from ``Random(seed)``.
-
-    Benchmarks seed their generator once at build time, so all runs would
-    share (and advance) one stream; this gives each run its own.
-    """
-    # ponytail: swaps Random cells of the closure; works for the suite's
-    # factories, a generate without a closed-over Random is left as is
-    gen = problem.generate
-    cells = tuple(
-        types.CellType(Random(seed))
-        if isinstance(c.cell_contents, Random) else c
-        for c in gen.__closure__ or ())
-    return replace(problem, generate=types.FunctionType(
-        gen.__code__, gen.__globals__, gen.__name__, gen.__defaults__,
-        cells))
-
-
 def run_one(benchmark, name, heuristic, seed, budget):
     """One run; the curve is the gap of the best-so-far at CHECKPOINTS
     evenly spaced evaluation counts up to ``budget``.
@@ -119,7 +100,7 @@ def run_one(benchmark, name, heuristic, seed, budget):
     Assumes the heuristic only evaluates feasible solutions (true for the
     GA, SA and random search here).
     """
-    problem = _seeded(benchmark.problem, seed)
+    problem = benchmark.problem
     trace = []  # best value so far after each evaluation
 
     def evaluate(solution):
