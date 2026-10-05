@@ -2,7 +2,6 @@
 
 Ownership: operators never modify their input; they return a new Genome.
 """
-import warnings
 from random import Random
 from typing import Optional
 
@@ -15,16 +14,12 @@ def inter_mutation(
     num_swaps: int = 2,
     probability: float = 0.75,
     rng: Optional[Random] = None,
-    **kwargs
+    **kwargs  # extra GA kwargs are ignored (operator signatures: separate scope)
 ) -> Genome:
     """At a random chance, swap up to num_swaps gene pairs.
 
     The input is not modified, a (possibly identical) copy is returned.
     """
-    if "q" in kwargs:  # legacy keyword, remove in 0.3 (issue #50)
-        warnings.warn("inter_mutation(q=...) is deprecated; use num_swaps.",
-                      DeprecationWarning, stacklevel=2)
-        num_swaps = kwargs.pop("q")
     rng = make_rng(rng)
     genome = genome[:]
     for _ in range(num_swaps):
