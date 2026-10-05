@@ -5,7 +5,7 @@ PyPI is published only from a GitHub Release, never from a push or tag.
 1. Bump `__version__` in `pymetaheuristics/__init__.py` (and the version
    assertion in `tests/test_pymetaheuristics.py`) and update `CHANGELOG.md`.
 2. Merge to `main`.
-3. Create a GitHub Release with tag `v<version>` (for example `v0.2.0`). The
+3. Create a GitHub Release with tag `v<version>` (for example `v0.3.0`). The
    tag must match `__version__` (a leading `v` is ignored) or the workflow
    fails before building.
 
