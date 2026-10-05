@@ -76,13 +76,14 @@ A new metaheuristic ships with all of:
 1. the package `pymetaheuristics/<name>/` (a function over `core.run`,
    exported from its `__init__.py`);
 2. tests under `tests/<name>/`;
-3. a user page in `docs/algorithms/` and an API page in `docs/reference/`;
-4. **an article in `docs/advance/`** with the mathematical explanation of
-   the implementation: the model, the update/acceptance rules with their
-   equations, parameters and their effect, complexity and evaluation cost
-   per iteration, and where this implementation deliberately differs from
-   the literature. Cite the original and relevant papers (authors, title,
-   venue, year);
+3. a short tutorial page in `docs/tutorial/` (like the GA and SA ones)
+   and an API page in `docs/reference/`;
+4. **an in-depth article in `docs/algorithms/<name>.md`** (nav: Advanced,
+   "<Name> in depth"), like the GA and SA ones: background and citations
+   (authors, title, venue, year), the model, the update or acceptance rules
+   with their equations, parameters and their effect, complexity and
+   evaluation cost per iteration, how the Python code maps onto the maths,
+   and where this implementation deliberately differs from the literature;
 5. registration in `experiments/runner.py` (with the same per-family
    moves), regenerated results (`uv run python -m experiments.runner`,
    then `uv run --group experiments python -m experiments.report`), and an
