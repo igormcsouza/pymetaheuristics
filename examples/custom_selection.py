@@ -16,7 +16,7 @@ def tournament_selection(population, scores, rng, k=2, size=3):
         contenders = rng.sample(
             range(len(population)), min(size, len(population)))
         best = min(contenders, key=scores.__getitem__)
-        winners.append(list(population[best]))  # copy: operators must not alias
+        winners.append(list(population[best]))  # copy, no aliasing
     return winners
 
 
