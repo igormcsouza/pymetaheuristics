@@ -1,4 +1,6 @@
 """Artificial Bee Colony as a plain function over the core API."""
+from functools import partial
+
 from pymetaheuristics.core import (
     InfeasibleError, OptimizationResult, Problem, Stop, better,
     make_rng, oriented, reject, run)
@@ -18,7 +20,7 @@ def artificial_bee_colony(
     2. onlooker bees: ``colony_size`` times, pick a source by binary
        tournament (works for any value sign), try a neighbour, keep if better;
     3. scouts: a source that failed to improve more than ``limit`` times is
-       replaced by a fresh ``problem.generate()`` solution.
+       replaced by a fresh ``problem.generate(rng)`` solution.
 
     Infeasible neighbours are redrawn up to ``max_neighbor_tries`` times,
     else the attempt counts as a failure. ``history`` is the best value after
@@ -29,9 +31,8 @@ def artificial_bee_colony(
     rng = make_rng(rng)
     direction = problem.direction
     feasible_neighbor = reject(neighbor, problem.feasible, max_neighbor_tries)
-    # the only place that calls generate (its signature is changing)
-    new_source = reject(lambda: problem.generate(), problem.feasible,
-                        max_start_tries)
+    new_source = partial(
+        reject(problem.generate, problem.feasible, max_start_tries), rng)
 
     def summary(sources, values):
         i = min(range(len(values)), key=lambda k: oriented(values[k],

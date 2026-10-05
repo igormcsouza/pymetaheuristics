@@ -1,8 +1,5 @@
-import pytest
-
 from pymetaheuristics.artificial_bee_colony import (
-    artificial_bee_colony, bit_flip_neighbor, gaussian_neighbor,
-    swap_neighbor)
+    artificial_bee_colony, bit_flip_neighbor, gaussian_neighbor)
 from pymetaheuristics.benchmarks.continuous import continuous, sphere_fn
 from pymetaheuristics.core import (
     Direction, Heuristic, Problem, max_evaluations, max_iterations)
@@ -12,7 +9,7 @@ WEIGHTS, VALUES, CAP = [3, 4, 5, 9], [4, 5, 7, 10], 9
 
 def knapsack(direction=Direction.MAXIMIZE):
     return Problem(
-        generate=lambda: [0, 0, 0, 0],
+        generate=lambda rng: [0, 0, 0, 0],
         evaluate=lambda s: sum(v * b for v, b in zip(VALUES, s)),
         feasible=lambda s: sum(w * b for w, b in zip(WEIGHTS, s)) <= CAP,
         direction=direction)
@@ -33,7 +30,7 @@ def test_knapsack_minimize_respects_direction():
 
 
 def test_tsp_permutation():
-    p = Problem(generate=lambda: [0, 1, 2, 3, 4, 5],
+    p = Problem(generate=lambda rng: rng.sample(range(6), 6),
                 evaluate=lambda t: sum(abs(t[i] - t[i - 1])
                                        for i in range(6)))
     r = artificial_bee_colony(p, stop=max_iterations(20), rng=2)
@@ -44,7 +41,7 @@ def test_tsp_permutation():
 def test_continuous_beats_random_and_is_deterministic():
     def go(seed, stop):
         return artificial_bee_colony(
-            continuous(sphere_fn, 3, (-5, 5), rng=seed), stop=stop,
+            continuous(sphere_fn, 3, (-5, 5)), stop=stop,
             rng=seed, neighbor=gaussian_neighbor)
     r = go(0, max_iterations(100))
     assert r.best_value < 0.1
@@ -64,7 +61,7 @@ def test_protocol_and_stop():
 
 def test_scouts_replace_stale_sources():
     gen = iter(range(1000))
-    p = Problem(generate=lambda: [next(gen)], evaluate=lambda s: 0.0)
+    p = Problem(generate=lambda rng: [next(gen)], evaluate=lambda s: 0.0)
     artificial_bee_colony(p, stop=max_iterations(3), rng=1, colony_size=2,
                           limit=0, neighbor=lambda s, rng: s)
     assert next(gen) > 2  # constant objective: scouts fire every iteration

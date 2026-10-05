@@ -16,7 +16,7 @@ is improved by three kinds of bees, all implemented in
    classic fitness-proportional roulette is replaced by the tournament so that
    negative or unbounded values need no scaling.
 3. **Scouts**: a source whose counter exceeds `limit` is abandoned and
-   replaced by a fresh `problem.generate()` solution.
+   replaced by a fresh `problem.generate(rng)` solution.
 
 ## Usage
 
