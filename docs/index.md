@@ -103,8 +103,8 @@ the same budget of 2000 evaluations over 20 seeds
 ![Time per run](img/overview-time.png)
 
 On TSP all three heuristics find the optimum on every seed and on the
-sphere the GA and SA come within 0.2% of it, while random search stays far
-off. Rastrigin is hard for all of them with this budget. A full run takes
+sphere the GA and SA close over 99.7% of random search's gap, while random
+search stays far off. Rastrigin is hard for all of them with this budget. A full run takes
 about 10-30 ms.
 
 ## What can I do?

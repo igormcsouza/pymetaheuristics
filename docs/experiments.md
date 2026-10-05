@@ -97,16 +97,16 @@ The library has no float operators, so `gaussian_neighbor` lives in
   on both instances, each within ~300-400 evaluations;
   random search is still 5-10% off on average after 2000.
 - **Sphere: the GA wins** (mean gap ~8e-5, 100% success) over SA (~4e-3,
-  0% success). Every generation mutates all 10 children with a 0.1 step
+  10% success). Every generation mutates all 10 children with a 0.1 step
   and keeps the best, so the population drifts steadily downhill; SA
   spends its high-temperature first half wandering (its curve starts
   worst) and its fixed sigma of 0.1 is too coarse for the last steps.
-- **Rastrigin: nobody gets near the optimum with this budget.** The GA has
-  the best mean gap (~18 vs ~22 random, ~42 SA) but stalls after ~300
+- **Rastrigin: nobody gets near the optimum with this budget.** The GA and ABC
+  have the best mean gaps (~13 each vs ~22 random, ~42 SA); the GA stalls after ~300
   evaluations: with only 10 genomes, elitism and fitness-weighted
   selection, the population collapses onto one basin within a few
   generations and 0.1 steps cannot leave it (premature convergence; its
-  std ~10 reflects which basin each seed lands in). SA freezes in a local
+  std ~6 reflects which basin each seed lands in). SA freezes in a local
   minimum for the same step-size reason, but is high-variance: its best
   seed (gap ~3) is the best overall.
 - **The GA used to be ~random search.** Before #49 each generation kept
@@ -119,7 +119,7 @@ The library has no float operators, so `gaussian_neighbor` lives in
   solves both TSP instances on every seed. On sphere its mean gap (~0.7,
   20% success) beats random search (2) but is far behind the GA and SA:
   abandoned sources throw away progress, and the fixed 0.1 step is slow
-  to converge. On rastrigin it has the best mean gap (~12.6 vs ~17.6 GA,
+  to converge. On rastrigin it has the best mean gap by a hair (~12.6 vs ~13.4 GA,
   ~22 random), thanks to scouts restarting in new basins. It is also the
   fastest per run. Parameters are not tuned per instance.
 - **Knapsack does not discriminate.** `knapsack-3` has 8 packings and
