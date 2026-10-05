@@ -64,7 +64,7 @@ covers:
   the runnable [examples/](examples/).
 - [Architecture](docs/architecture.md), [benchmarks](docs/benchmarks.md),
   [experiments](docs/experiments.md).
-- [Migrating from 0.1](docs/migrating.md): the `GeneticAlgorithm` class is
+- [Release notes](docs/release-notes.md): the `GeneticAlgorithm` class is
   deprecated.
 
 ## Development

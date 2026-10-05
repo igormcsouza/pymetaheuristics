@@ -16,7 +16,7 @@ TUTORIAL = ['problem', 'constraints', 'stopping', 'operators',
 # The tutorial pages build on each other, so they share one namespace.
 PAGES = ['README.md', 'docs/index.md',
          ['docs/tutorial/%s.md' % name for name in TUTORIAL],
-         'docs/examples.md', 'docs/extending.md', 'docs/migrating.md']
+         'docs/examples.md', 'docs/extending.md', 'docs/release-notes.md']
 # Blocks may be indented inside a tab or admonition.
 BLOCK = re.compile(r'^( *)```python\n(.*?)^\1```', re.S | re.M)
 

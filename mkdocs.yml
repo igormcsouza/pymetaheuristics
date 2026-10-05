@@ -118,7 +118,7 @@ nav:
   - Project:
       - Benchmark suite: benchmarks.md
       - Experiments: experiments.md
-      - Migrating from 0.1: migrating.md
+      - Release notes: release-notes.md
       - Releasing: releasing.md
 
 validation:
