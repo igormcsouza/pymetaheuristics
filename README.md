@@ -57,7 +57,7 @@ The documentation lives in [docs/](docs/). Start with [docs/index.md](docs/index
 or build the site locally with `uv run --group docs mkdocs serve`. It
 covers:
 
-- [User guide](docs/guide.md): problems, directions, constraints, both
+- [Tutorial](docs/tutorial/index.md): problems, directions, constraints, both
   heuristics, results and history.
 - [Worked examples](docs/examples.md): Knapsack and TSP.
 - [Extending](docs/extending.md): custom operators and heuristics, plus

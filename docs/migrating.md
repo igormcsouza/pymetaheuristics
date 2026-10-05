@@ -9,7 +9,7 @@ will be removed in 0.3
 | `GeneticAlgorithm(fitness_function, genome_generator, constraints, direction=...)` | `Problem(generate=..., evaluate=..., feasible=..., direction=...)` |
 | `ga.add_constraint(c)` / `constraints=[...]` | one `feasible` predicate: `lambda s: all(c(s) for c in constraints)` |
 | `ga.train(epochs, pop_size, ...)` returns `(genome, fitness)` | `genetic_algorithm(problem, stop=max_iterations(epochs), population_size=pop_size, ...)` returns an `OptimizationResult` |
-| `ga.history` keyed by timestamp | `result.history`, one dict per generation (see [Results and history](guide.md#results-and-history)) |
+| `ga.history` keyed by timestamp | `result.history`, one dict per generation (see [Results and history](tutorial/results.md)) |
 | `verbose=True` | loop over `result.history` after the run |
 | `genetic_algorithm.steps.multations` | `genetic_algorithm.steps.mutations` |
 | `inter_mutation(genome, q=...)` | `inter_mutation(genome, num_swaps=...)` |
