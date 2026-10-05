@@ -1,4 +1,3 @@
-from functools import partial
 from random import Random
 
 import pytest
@@ -7,8 +6,6 @@ from pymetaheuristics.core import (
     Direction, Heuristic, InfeasibleError, Problem, State, any_of,
     max_evaluations, max_iterations, oriented, target_value)
 from pymetaheuristics.genetic_algorithm import genetic_algorithm
-from pymetaheuristics.genetic_algorithm.steps.selections import (
-    random_weighted_selection)
 
 
 def make_problem(direction=Direction.MINIMIZE, seed=0, feasible=None):
@@ -45,8 +42,7 @@ def test_accepts_random_instance():
 def test_direction(direction):
     result = genetic_algorithm(
         make_problem(direction), stop=max_iterations(40), rng=0,
-        population_size=20,
-        selection=partial(random_weighted_selection, k=5))
+        population_size=20)
     values = [r['best'] for r in result.history]
     pick = min if direction is Direction.MINIMIZE else max
     assert result.best_value == pick(values)
@@ -161,9 +157,10 @@ def test_unsatisfiable_problem_raises():
 def test_selection_gets_oriented_scores(direction):
     seen = []
 
-    def selection(population, scores, rng):
+    def selection(population, scores, rng, k):
+        assert k == 2
         seen.append((population, scores))
-        return population[:2]
+        return population[:k]
 
     problem = make_problem(direction)
     genetic_algorithm(problem, stop=max_iterations(2), rng=0,

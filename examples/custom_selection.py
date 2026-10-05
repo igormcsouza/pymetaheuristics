@@ -1,15 +1,15 @@
 """Custom GA selection: tournament selection, passed as ``selection=``.
 
-Contract: selection(population, scores, rng) returns the parents (the GA
-breeds the first two). Scores are oriented: lower is better, in both
-directions. Bind knobs such as k with functools.partial.
+Contract: selection(population, scores, rng, k) returns k parents (the GA
+asks for 2). Scores are oriented: lower is better, in both directions.
+Bind extra knobs such as size with functools.partial.
 """
 from pymetaheuristics.benchmarks import knapsack
 from pymetaheuristics.core import max_iterations
 from pymetaheuristics.genetic_algorithm import genetic_algorithm
 
 
-def tournament_selection(population, scores, rng, k=2, size=3):
+def tournament_selection(population, scores, rng, k, size=3):
     """Return k winners; each wins a tournament among `size` random picks."""
     winners = []
     for _ in range(k):

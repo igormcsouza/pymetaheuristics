@@ -12,7 +12,7 @@ _SHIFT = 0.1  # weight of the worst genome, as a fraction of the range
 
 
 def random_weighted_selection(
-    population: Population, scores: List[float], rng: Random, k: int = 2
+    population: Population, scores: List[float], rng: Random, k: int
 ) -> Population:
     """Selects randomly k genomes on a population. This approach considers the
     fitness of each Genome as weights so the most fitted is very likely to be

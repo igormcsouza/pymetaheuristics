@@ -32,8 +32,8 @@ mutation = partial(inter_mutation, num_swaps=3)
 print(bit_flip_neighbor([0, 0, 0], Random(0)), mutation([1, 2, 3], Random(0)))
 ```
 
-The other GA operators are `selection(population, scores, rng)` (scores are
-oriented, lower is better) and `crossover(parent1, parent2, rng)`.
+The other GA operators are `selection(population, scores, rng, k)` (returns
+`k` parents, the GA asks for 2; scores are oriented, lower is better) and `crossover(parent1, parent2, rng)`.
 
 ## Recap
 
