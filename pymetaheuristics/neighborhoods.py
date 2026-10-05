@@ -30,3 +30,12 @@ def bit_flip_neighbor(solution: Sequence, rng: Random) -> list:
     i = rng.randrange(len(new))
     new[i] = 1 - new[i]
     return new
+
+
+def gaussian_neighbor(solution: Sequence, rng: Random,
+                      sigma: float = 0.1) -> list:
+    """Continuous move: add N(0, sigma) to one random coordinate. Bounds are
+    left to ``Problem.feasible`` (infeasible moves are redrawn)."""
+    new = list(solution)
+    new[rng.randrange(len(new))] += rng.gauss(0, sigma)
+    return new

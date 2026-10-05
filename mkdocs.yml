@@ -106,6 +106,7 @@ nav:
   - Advanced:
       - Genetic Algorithm in depth: algorithms/genetic-algorithm.md
       - Simulated Annealing in depth: algorithms/simulated-annealing.md
+      - Artificial Bee Colony in depth: algorithms/artificial-bee-colony.md
       - Extending: extending.md
       - Architecture: architecture.md
   - Reference:
@@ -113,6 +114,7 @@ nav:
       - Core: reference/core.md
       - Genetic Algorithm: reference/genetic-algorithm.md
       - Simulated Annealing: reference/simulated-annealing.md
+      - Artificial Bee Colony: reference/artificial-bee-colony.md
       - Neighborhoods: reference/neighborhoods.md
       - Benchmarks: reference/benchmarks.md
   - Project:
