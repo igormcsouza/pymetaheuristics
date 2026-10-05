@@ -6,16 +6,18 @@ Format based on [Keep a Changelog](https://keepachangelog.com/).
 
 ### Added
 
-- `artificial_bee_colony()`.
+- `artificial_bee_colony()` and `gaussian_neighbor`.
 
 ### Changed
 
 - `Problem.generate` takes the run's `rng`.
 - GA operators take `rng`: `mutation(genome, rng, ...)`,
-  `crossover(parent1, parent2, rng)`, `selection(population, scores, rng, k)`
-  with oriented scores. Knobs are bound with `functools.partial`;
+  `crossover(parent1, parent2, rng)`, `selection(population, scores, rng, k=2)`
+  with oriented scores (lower is better). Knobs are bound with `functools.partial`;
   `**operator_kwargs` is gone.
 - `inter_mutation(genome, rng, num_swaps=2, probability=0.75)`.
+- Benchmark factories `knapsack`, `tsp` and `continuous` no longer take an
+  `rng`/`seed` argument.
 
 ### Removed
 

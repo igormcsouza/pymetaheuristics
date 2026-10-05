@@ -14,7 +14,7 @@ Removes everything deprecated in 0.2 and changes the operator and
       knobs are bound with `functools.partial`, there is no `**operator_kwargs`.
     - **Removed** the deprecated names listed below.
 
-New in 0.3.0: `artificial_bee_colony()`, a new algorithm.
+New in 0.3.0: `artificial_bee_colony()` and the `gaussian_neighbor` move.
 
 ### Upgrading from 0.2
 
@@ -28,22 +28,28 @@ problem = Problem(generate=lambda: rng.sample(range(5), 5), evaluate=f)
 problem = Problem(generate=lambda rng: rng.sample(range(5), 5), evaluate=f)
 ```
 
-Operators (selection scores are oriented: higher is always better):
+Operators (`rng` is required and positional; selection receives *scores*
+oriented so that lower is always better, whatever the direction):
 
 ```text
 # 0.2
-def mutation(genome, **kwargs): ...
-def crossover(parent1, parent2, **kwargs): ...
-def selection(population, scores, k, **kwargs): ...
+def mutation(genome, rng=None, **kwargs): ...
+def crossover(parent1, parent2, rng=None, **kwargs): ...
+def selection(population, fitness_function, k=2, rng=None,
+              direction=MINIMIZE, **kwargs): ...
 genetic_algorithm(problem, stop=stop, mutation=inter_mutation, q=3)
 
 # 0.3
 def mutation(genome, rng, ...): ...
 def crossover(parent1, parent2, rng): ...
-def selection(population, scores, rng, k): ...
+def selection(population, scores, rng, k=2): ...  # bind k with partial
 genetic_algorithm(problem, stop=stop,
                   mutation=partial(inter_mutation, num_swaps=3))
 ```
+
+Benchmark factories no longer take an `rng`/`seed`: `tsp(cities, 0)` becomes
+`tsp(cities)`, likewise `knapsack(...)` and `continuous(...)`. Seed the
+heuristic instead (`rng=`).
 
 `inter_mutation` is now `inter_mutation(genome, rng, num_swaps=2,
 probability=0.75)`.
