@@ -44,11 +44,6 @@ def gaussian_neighbor(solution, rng, sigma=0.1, bounds=BOUNDS):
     return new
 
 
-def as_mutation(move):
-    """Adapt an SA ``neighbor(solution, rng)`` to the GA mutation shape."""
-    return lambda genome, rng=None, **_: move(genome, rng)
-
-
 def random_search(problem, *, stop, rng=None):
     """Baseline: evaluate fresh feasible solutions until ``stop``."""
     generate = reject(problem.generate, problem.feasible)
@@ -84,7 +79,7 @@ def configs(family_name, budget):
         'random_search': random_search,
         'genetic_algorithm': partial(
             genetic_algorithm, population_size=10, crossover=crossover,
-            mutation=as_mutation(move)),
+            mutation=move),
         'simulated_annealing': partial(
             simulated_annealing, neighbor=move, initial_temperature=t0,
             cooling=geometric_cooling(0.001 ** (1 / budget))),

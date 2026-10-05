@@ -37,8 +37,7 @@ def genetic_algorithm(
     crossover: CrossOverFunction = single_point_crossover,
     mutation: MutationFunction = inter_mutation,
     repair: Optional[Callable[[Genome], Genome]] = None,
-    max_tries: int = 1000,
-    **operator_kwargs: Any
+    max_tries: int = 1000
 ) -> OptimizationResult:
     """Evolve a population of ``problem`` solutions until ``stop`` is met.
 
@@ -52,9 +51,15 @@ def genetic_algorithm(
     is better (elitism), so it is never lost and never re-evaluated: each
     generation costs ``population_size`` evaluations (plus any made by a
     custom ``selection`` on genomes outside the population).
-    ``operator_kwargs`` (e.g. ``k=5``) are
-    forwarded to every operator, together with ``rng`` (and ``direction``
-    for selection).
+
+    Operator contracts (bind knobs with ``functools.partial``)::
+
+        selection(population, scores, rng) -> parents
+        crossover(parent1, parent2, rng) -> (child1, child2)
+        mutation(genome, rng) -> genome
+
+    ``scores`` are oriented (lower is better for either direction), so a
+    selection never needs the problem's direction.
 
     ``stop`` is checked once per generation, so ``max_evaluations`` may be
     exceeded by up to one generation of evaluations.
@@ -84,10 +89,9 @@ def genetic_algorithm(
         population, values, best, best_value = carry
         offspring = _breed(
             problem, population, values, selection, crossover,
-            population_size, rng, operator_kwargs)
+            population_size, rng)
         offspring = _mutate(
-            offspring, mutation, problem.feasible, max_tries, rng,
-            operator_kwargs)
+            offspring, mutation, problem.feasible, max_tries, rng)
         population = _ensure_feasible(
             offspring, problem.feasible, repair, generate)
         return _evaluated(problem, population, best, best_value)
@@ -116,46 +120,30 @@ def _evaluated(
             record['best'], record)
 
 
-def _select(
-    problem: Problem, population: Population, values: List[float],
-    selection: SelectionFunction, rng: Random, kwargs: Dict[str, Any]
-) -> Population:
-    """Run ``selection`` on cached fitness: members are not re-evaluated."""
-    cache = {id(genome): value for genome, value in zip(population, values)}
-
-    def fitness(genome: Genome) -> float:
-        if id(genome) in cache:
-            return cache[id(genome)]
-        return problem.evaluate(genome)
-
-    return selection(
-        population, fitness, rng=rng, direction=problem.direction, **kwargs)
-
-
 def _breed(
     problem: Problem, population: Population, values: List[float],
     selection: SelectionFunction, crossover: CrossOverFunction, size: int,
-    rng: Random, kwargs: Dict[str, Any]
+    rng: Random
 ) -> Population:
     """``size`` children, each pair bred from freshly selected parents."""
+    scores = [oriented(v, problem.direction) for v in values]
     children: Population = []
     while len(children) < size:
-        parents = _select(problem, population, values, selection, rng, kwargs)
-        children += crossover(*parents[:2], rng=rng, **kwargs)
+        parents = selection(population, scores, rng)
+        children += crossover(*parents[:2], rng)
     return children[:size]
 
 
 def _mutate(
     population: Population, mutation: MutationFunction,
-    feasible: Callable[[Genome], bool], max_tries: int, rng: Random,
-    kwargs: Dict[str, Any]
+    feasible: Callable[[Genome], bool], max_tries: int, rng: Random
 ) -> Population:
     """Feasible mutant of each genome, or the genome itself if none found."""
     safe_mutation = reject(mutation, feasible, max_tries)
 
     def mutate(genome: Genome) -> Genome:
         try:
-            return safe_mutation(genome, rng=rng, **kwargs)
+            return safe_mutation(genome, rng)
         except InfeasibleError:
             return genome
 

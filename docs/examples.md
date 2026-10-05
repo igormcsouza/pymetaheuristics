@@ -44,12 +44,8 @@ problem = Problem(
 )
 
 
-def bit_flip_mutation(genome, rng, **kwargs):
-    return bit_flip_neighbor(genome, rng)
-
-
 ga = genetic_algorithm(problem, stop=max_iterations(50), rng=0,
-                       population_size=20, mutation=bit_flip_mutation)
+                       population_size=20, mutation=bit_flip_neighbor)
 sa = simulated_annealing(problem, stop=max_iterations(2000), rng=0,
                          neighbor=bit_flip_neighbor,
                          initial_temperature=50.0,
@@ -105,15 +101,11 @@ problem = Problem(
 )  # Direction.MINIMIZE is the default
 
 
-def two_opt_mutation(genome, rng, **kwargs):
-    return two_opt_neighbor(genome, rng)
-
-
 # Stop at the optimum, or after 3000 evaluations at the latest.
 stop = any_of(target_value(OPTIMUM + 1e-9), max_evaluations(3000))
 
 ga = genetic_algorithm(problem, stop=stop, rng=0, population_size=20,
-                       crossover=pmx_single_point, mutation=two_opt_mutation)
+                       crossover=pmx_single_point, mutation=two_opt_neighbor)
 sa = simulated_annealing(problem, stop=stop, rng=0,
                          neighbor=two_opt_neighbor, initial_temperature=1.0,
                          cooling=geometric_cooling(0.998))

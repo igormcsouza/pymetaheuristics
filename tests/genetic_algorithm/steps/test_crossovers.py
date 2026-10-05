@@ -1,3 +1,5 @@
+from random import Random
+
 import pytest
 
 from pymetaheuristics.genetic_algorithm.exceptions import CrossOverException
@@ -11,7 +13,7 @@ def test_genetic_algorithm_steps_crossovers_single_point_crossover():
     parent_g1 = [0, 0, 1, 0, 1, 0, 0]
     parent_g2 = [1, 1, 0, 0, 1, 1, 1]
 
-    g1, g2 = single_point_crossover(parent_g1, parent_g2)
+    g1, g2 = single_point_crossover(parent_g1, parent_g2, Random(0))
 
     for i, (gene1, gene2) in enumerate(zip(g1, g2)):
         assert gene1 == parent_g1[i] or gene1 == parent_g2[i]
@@ -24,7 +26,7 @@ def test_genetic_algorithm_steps_crossovers_single_point_crossover_failure():
     parent_g2 = [1, 1, 0, 0, 1]
 
     with pytest.raises(CrossOverException):
-        single_point_crossover(parent_g1, parent_g2)
+        single_point_crossover(parent_g1, parent_g2, Random(0))
 
 
 def test_genetic_algorithm_steps_crossovers_single_point_crossover_len_2():
@@ -32,7 +34,7 @@ def test_genetic_algorithm_steps_crossovers_single_point_crossover_len_2():
     parent_g1 = [0]
     parent_g2 = [1]
 
-    g1, g2 = single_point_crossover(parent_g1, parent_g2)
+    g1, g2 = single_point_crossover(parent_g1, parent_g2, Random(0))
 
     assert g1 == parent_g1
     assert g2 == parent_g2
@@ -43,7 +45,7 @@ def test_genetic_algorithm_steps_crossovers_pmx_single_point():
     parent_g1 = [1, 2, 3, 4, 5]
     parent_g2 = [5, 4, 3, 2, 1]
 
-    g1, g2 = pmx_single_point(parent_g1, parent_g2)
+    g1, g2 = pmx_single_point(parent_g1, parent_g2, Random(0))
 
     assert sum(g1) == sum(g2) == 15
 
@@ -54,7 +56,7 @@ def test_genetic_algorithm_steps_crossovers_pmx_single_point_failure():
     parent_g2 = [5, 4, 3]
 
     with pytest.raises(CrossOverException):
-        pmx_single_point(parent_g1, parent_g2)
+        pmx_single_point(parent_g1, parent_g2, Random(0))
 
 
 def test_genetic_algorithm_steps_crossovers_pmx_single_point_len_2():
@@ -62,7 +64,7 @@ def test_genetic_algorithm_steps_crossovers_pmx_single_point_len_2():
     parent_g1 = [1]
     parent_g2 = [5]
 
-    g1, g2 = pmx_single_point(parent_g1, parent_g2)
+    g1, g2 = pmx_single_point(parent_g1, parent_g2, Random(0))
 
     assert g1 == parent_g1
     assert g2 == parent_g2

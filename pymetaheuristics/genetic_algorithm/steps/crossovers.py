@@ -8,11 +8,10 @@ from typing import Optional, Tuple
 
 from pymetaheuristics.genetic_algorithm.types import Genome
 from pymetaheuristics.genetic_algorithm.exceptions import CrossOverException
-from pymetaheuristics.utils.rng import make_rng
 
 
 def _cut_point(
-    parent1: Genome, parent2: Genome, rng: Optional[Random]
+    parent1: Genome, parent2: Genome, rng: Random
 ) -> Optional[int]:
     """Random cut in ``[1, len - 1]``; None if the genomes are too short.
 
@@ -24,11 +23,11 @@ def _cut_point(
                 len(parent1), len(parent2)))
     if len(parent1) < 2:
         return None
-    return make_rng(rng).randint(1, len(parent1) - 1)
+    return rng.randint(1, len(parent1) - 1)
 
 
 def single_point_crossover(
-    parent1: Genome, parent2: Genome, rng: Optional[Random] = None, **kwargs
+    parent1: Genome, parent2: Genome, rng: Random
 ) -> Tuple[Genome, Genome]:
     """Cut 2 Genomes at a random cut_point and swap their tails."""
     cut_point = _cut_point(parent1, parent2, rng)
@@ -40,7 +39,7 @@ def single_point_crossover(
 
 
 def pmx_single_point(
-    parent1: Genome, parent2: Genome, rng: Optional[Random] = None, **kwargs
+    parent1: Genome, parent2: Genome, rng: Random
 ) -> Tuple[Genome, Genome]:
     """
     PMX is a crossover function which consider a Genome as a sequence of
