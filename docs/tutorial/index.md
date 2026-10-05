@@ -11,6 +11,7 @@ every block of code runs.
 | [Operators](operators.md) | how neighborhoods, selection, crossover and mutation plug in |
 | [Genetic Algorithm](genetic-algorithm.md) | population-based search |
 | [Simulated Annealing](simulated-annealing.md) | single-trajectory search |
+| [Artificial Bee Colony](artificial-bee-colony.md) | population search with a single persistence knob |
 | [Results and history](results.md) | read the result and plot convergence |
 | [Reproducibility](reproducibility.md) | get the same run twice |
 

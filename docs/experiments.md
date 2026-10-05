@@ -117,9 +117,10 @@ The library has no float operators, so `gaussian_neighbor` lives in
   weights were nearly uniform on small-range continuous values) fixed it.
 - **Artificial bee colony: strong on TSP, middling on continuous.** It
   solves both TSP instances on every seed. On sphere its mean gap (~0.7,
-  20% success) beats random search (2) but is far behind the GA and SA:
-  abandoned sources throw away progress, and the fixed 0.1 step is slow
-  to converge. On rastrigin it has the best mean gap by a hair (~12.6 vs ~13.4 GA,
+  20% success) beats random search (2) but is far behind the GA and SA.
+  Changing `limit` (20 to 1000) makes no difference; a colony of 5 instead
+  of 10 sources gives ~0.1, so the budget seems spread too thinly over the
+  sources for the fixed 0.1 step (observed, not proven). On rastrigin it has the best mean gap by a hair (~12.6 vs ~13.4 GA,
   ~22 random), thanks to scouts restarting in new basins. It is also the
   fastest per run. Parameters are not tuned per instance.
 - **Knapsack does not discriminate.** `knapsack-3` has 8 packings and
