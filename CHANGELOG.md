@@ -2,6 +2,32 @@
 
 Format based on [Keep a Changelog](https://keepachangelog.com/).
 
+## [0.3.0]
+
+### Added
+
+- `artificial_bee_colony()`.
+
+### Changed
+
+- `Problem.generate` takes the run's `rng`.
+- GA operators take `rng`: `mutation(genome, rng, ...)`,
+  `crossover(parent1, parent2, rng)`, `selection(population, scores, rng, k)`
+  with oriented scores. Knobs are bound with `functools.partial`;
+  `**operator_kwargs` is gone.
+- `inter_mutation(genome, rng, num_swaps=2, probability=0.75)`.
+
+### Removed
+
+- `GeneticAlgorithm` class, `GeneticAlgorithmHistory`, `LoadHistoryException`.
+- `genetic_algorithm.steps.multations` (use `mutations`).
+- `utils.distances.euclidian_distance` (use `euclidean_distance`).
+- `inter_mutation(q=...)` (use `num_swaps=`).
+- Neighborhood re-exports from the simulated annealing module (use
+  `pymetaheuristics.neighborhoods`).
+
+See [Upgrading from 0.2](docs/release-notes.md).
+
 ## [0.2.0]
 
 ### Added

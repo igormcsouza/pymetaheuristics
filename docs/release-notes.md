@@ -3,6 +3,62 @@
 What each release contained, what broke, and how to upgrade. The short
 version lives in the [changelog](https://github.com/igormcsouza/pymetaheuristics/blob/main/CHANGELOG.md).
 
+## 0.3.0 (2026-10-05)
+
+Removes everything deprecated in 0.2 and changes the operator and
+`Problem.generate` contracts, so operators draw from the run's `rng`.
+
+!!! warning "Breaking changes"
+    - **`Problem.generate` takes the run's `rng`.**
+    - **GA operators take `rng`** and selection gets oriented scores; extra
+      knobs are bound with `functools.partial`, there is no `**operator_kwargs`.
+    - **Removed** the deprecated names listed below.
+
+New in 0.3.0: `artificial_bee_colony()`, a new algorithm.
+
+### Upgrading from 0.2
+
+Problem generation:
+
+```text
+# 0.2
+problem = Problem(generate=lambda: rng.sample(range(5), 5), evaluate=f)
+
+# 0.3
+problem = Problem(generate=lambda rng: rng.sample(range(5), 5), evaluate=f)
+```
+
+Operators (selection scores are oriented: higher is always better):
+
+```text
+# 0.2
+def mutation(genome, **kwargs): ...
+def crossover(parent1, parent2, **kwargs): ...
+def selection(population, scores, k, **kwargs): ...
+genetic_algorithm(problem, stop=stop, mutation=inter_mutation, q=3)
+
+# 0.3
+def mutation(genome, rng, ...): ...
+def crossover(parent1, parent2, rng): ...
+def selection(population, scores, rng, k): ...
+genetic_algorithm(problem, stop=stop,
+                  mutation=partial(inter_mutation, num_swaps=3))
+```
+
+`inter_mutation` is now `inter_mutation(genome, rng, num_swaps=2,
+probability=0.75)`.
+
+Removed names:
+
+| 0.2 (deprecated) | 0.3 |
+|---|---|
+| `GeneticAlgorithm(...)`, `.train()` | `genetic_algorithm(problem, stop=..., ...)` |
+| `GeneticAlgorithmHistory`, `LoadHistoryException` | `result.history` (a list of dicts) |
+| `genetic_algorithm.steps.multations` | `genetic_algorithm.steps.mutations` |
+| `utils.distances.euclidian_distance` | `utils.distances.euclidean_distance` (or `math.dist`) |
+| `inter_mutation(genome, q=...)` | `inter_mutation(genome, rng, num_swaps=...)` |
+| neighborhoods imported from the simulated annealing module | `pymetaheuristics.neighborhoods` |
+
 ## 0.2.0 (2026-10-04)
 
 A rewrite of the core around plain functions. Python 3.12+.
