@@ -42,7 +42,7 @@ genetic_algorithm(problem, stop=stop, mutation=inter_mutation, q=3)
 # 0.3
 def mutation(genome, rng, ...): ...
 def crossover(parent1, parent2, rng): ...
-def selection(population, scores, rng, k=2): ...  # bind k with partial
+def selection(population, scores, rng, k): ...  # the GA asks for k=2
 genetic_algorithm(problem, stop=stop,
                   mutation=partial(inter_mutation, num_swaps=3))
 ```

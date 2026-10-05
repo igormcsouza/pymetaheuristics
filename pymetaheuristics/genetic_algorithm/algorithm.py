@@ -42,7 +42,7 @@ def genetic_algorithm(
     """Evolve a population of ``problem`` solutions until ``stop`` is met.
 
     Each generation breeds ``population_size`` children: ``selection``
-    picks parents and ``crossover`` breeds the first two, repeated until
+    picks a pair of parents and ``crossover`` breeds them, repeated until
     the population is full. Every child is mutated (``mutation`` is retried
     up to ``max_tries`` times for a feasible mutant, else the child is kept
     as is), then any child still infeasible is passed through ``repair`` if
@@ -54,7 +54,7 @@ def genetic_algorithm(
 
     Operator contracts (bind knobs with ``functools.partial``)::
 
-        selection(population, scores, rng) -> parents
+        selection(population, scores, rng, k) -> k parents  # GA: k=2
         crossover(parent1, parent2, rng) -> (child1, child2)
         mutation(genome, rng) -> genome
 
@@ -129,8 +129,7 @@ def _breed(
     scores = [oriented(v, problem.direction) for v in values]
     children: Population = []
     while len(children) < size:
-        parents = selection(population, scores, rng)
-        children += crossover(*parents[:2], rng)
+        children += crossover(*selection(population, scores, rng, 2), rng)
     return children[:size]
 
 

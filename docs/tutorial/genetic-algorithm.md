@@ -19,8 +19,8 @@ print(ga.best_solution, ga.best_value)
 
 Each generation:
 
-1. Breeds `population_size` children. `selection` picks parents and
-   `crossover` breeds the first two, until the population is full.
+1. Breeds `population_size` children. `selection` picks two parents and
+   `crossover` breeds them, until the population is full.
 2. Mutates every child. For an infeasible mutant, `mutation` is retried up
    to `max_tries` times, and if every try is infeasible the child is kept
    unmutated.

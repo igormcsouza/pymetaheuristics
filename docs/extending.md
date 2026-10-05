@@ -14,7 +14,7 @@ ones would go.
 |---|---|---|
 | Neighborhood | `neighbor(solution, rng) -> solution` | `simulated_annealing(neighbor=...)` |
 | Cooling | `cooling(temperature) -> temperature` | `simulated_annealing(cooling=...)` |
-| Selection | `selection(population, scores, rng) -> parents` | `genetic_algorithm(selection=...)` |
+| Selection | `selection(population, scores, rng, k) -> k parents` | `genetic_algorithm(selection=...)` |
 | Crossover | `crossover(parent1, parent2, rng) -> (child1, child2)` | `genetic_algorithm(crossover=...)` |
 | Mutation | `mutation(genome, rng) -> genome` | `genetic_algorithm(mutation=...)` |
 | Repair | `repair(genome) -> genome` | `genetic_algorithm(repair=...)` |

@@ -4,9 +4,10 @@ from typing import Any, Callable, List, Tuple
 Genome = List[Any]
 Population = List[Genome]
 
-# selection(population, scores, rng) -> parents; scores are oriented (lower
-# is better); bind knobs such as k with functools.partial
-SelectionFunction = Callable[[Population, List[float], Random], Population]
+# selection(population, scores, rng, k) -> k parents; scores are oriented
+# (lower is better); bind extra knobs with functools.partial
+SelectionFunction = Callable[
+    [Population, List[float], Random, int], Population]
 # crossover(parent1, parent2, rng) -> (child1, child2)
 CrossOverFunction = Callable[
     [Genome, Genome, Random], Tuple[Genome, Genome]]
