@@ -14,7 +14,7 @@ def inter_mutation(
     num_swaps: int = 2,
     probability: float = 0.75,
     rng: Optional[Random] = None,
-    **kwargs  # extra GA kwargs are ignored (operator signatures: separate scope)
+    **kwargs  # ignored; removed with the GA operator contract (#50)
 ) -> Genome:
     """At a random chance, swap up to num_swaps gene pairs.
 

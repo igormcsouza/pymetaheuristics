@@ -1,7 +1,5 @@
 from random import Random
 
-import pytest
-
 from pymetaheuristics.core import Direction, best_of, better
 from pymetaheuristics.genetic_algorithm.steps.selections import (
     random_weighted_selection)
