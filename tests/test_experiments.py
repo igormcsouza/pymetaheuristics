@@ -3,7 +3,8 @@ from experiments.report import table
 from experiments.runner import aggregate, run, write
 from pymetaheuristics.benchmarks import all_benchmarks
 
-HEURISTICS = {'random_search', 'genetic_algorithm', 'simulated_annealing'}
+HEURISTICS = {'random_search', 'genetic_algorithm', 'simulated_annealing',
+              'artificial_bee_colony'}
 
 
 def test_runner_smoke(tmp_path):
@@ -11,7 +12,7 @@ def test_runner_smoke(tmp_path):
     assert len(runs) == len(all_benchmarks()) * len(HEURISTICS) * 2
     for r in runs:
         assert r['gap'] >= 0 and r['termination'] == 'stop'
-        assert 40 <= r['evaluations'] <= 50  # GA may finish its generation
+        assert 40 <= r['evaluations'] <= 50  # GA/ABC finish their iteration
         assert len(r['curve']) == 20
         assert all(a >= b for a, b in zip(r['curve'], r['curve'][1:]))
 

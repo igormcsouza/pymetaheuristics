@@ -13,6 +13,7 @@ from pathlib import Path
 from statistics import fmean, pstdev
 from time import perf_counter
 
+from pymetaheuristics.artificial_bee_colony import artificial_bee_colony
 from pymetaheuristics.benchmarks import all_benchmarks, gap
 from pymetaheuristics import core
 from pymetaheuristics.core import better, max_evaluations, oriented, reject
@@ -72,7 +73,8 @@ def configs(family_name, budget):
 
     SA cools geometrically from T0 to T0/1000 over the budget (one
     evaluation per iteration). GA uses the library default population (10)
-    and selection.
+    and selection. ABC uses 10 food sources (the GA's population size) and
+    abandons a source after 20 failed attempts.
     """
     move, crossover, t0 = _FAMILY[family_name]
     return {
@@ -83,6 +85,8 @@ def configs(family_name, budget):
         'simulated_annealing': partial(
             simulated_annealing, neighbor=move, initial_temperature=t0,
             cooling=geometric_cooling(0.001 ** (1 / budget))),
+        'artificial_bee_colony': partial(
+            artificial_bee_colony, colony_size=10, limit=20, neighbor=move),
     }
 
 
