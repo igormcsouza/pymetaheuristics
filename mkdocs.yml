@@ -78,10 +78,17 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.tabbed:
       alternate_style: true
+  - pymdownx.arithmatex:
+      generic: true
+  - footnotes
   - attr_list
   - md_in_html
   - toc:
       permalink: true
+
+extra_javascript:
+  - javascripts/mathjax.js
+  - https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
 
 nav:
   - Home: index.md
@@ -97,6 +104,8 @@ nav:
       - Reproducibility: tutorial/reproducibility.md
   - Examples: examples.md
   - Advanced:
+      - Genetic Algorithm in depth: algorithms/genetic-algorithm.md
+      - Simulated Annealing in depth: algorithms/simulated-annealing.md
       - Extending: extending.md
       - Architecture: architecture.md
   - Reference:
