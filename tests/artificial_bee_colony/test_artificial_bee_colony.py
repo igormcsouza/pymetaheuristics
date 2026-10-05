@@ -65,3 +65,12 @@ def test_scouts_replace_stale_sources():
     artificial_bee_colony(p, stop=max_iterations(3), rng=1, colony_size=2,
                           limit=0, neighbor=lambda s, rng: s)
     assert next(gen) > 2  # constant objective: scouts fire every iteration
+
+
+def test_infeasible_neighbors_count_as_failed_trials():
+    p = Problem(generate=lambda rng: [0], evaluate=lambda s: 0.0,
+                feasible=lambda s: s == [0])
+    r = artificial_bee_colony(
+        p, stop=max_iterations(2), rng=1, colony_size=2,
+        neighbor=lambda s, rng: [1], max_neighbor_tries=1)
+    assert r.best_solution == [0]
