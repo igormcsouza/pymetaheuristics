@@ -3,7 +3,7 @@
 `pymetaheuristics.benchmarks` provides `Problem` instances with known best
 values, independent of any heuristic. Use `get(name)`, `all_benchmarks()` or
 `BENCHMARKS`; build custom instances with the factories `knapsack`, `tsp`,
-`continuous` (each takes an optional `rng` seed/`Random`).
+`continuous` (build instances; randomness comes from the heuristic's `rng`).
 
 | Name | Representation | Objective | Constraint | Known best |
 |------|----------------|-----------|------------|-----------|

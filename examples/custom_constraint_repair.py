@@ -5,7 +5,6 @@
   allowed but score worse.
 """
 from dataclasses import replace
-from random import Random
 
 from pymetaheuristics.benchmarks import knapsack
 from pymetaheuristics.core import max_iterations, penalty
@@ -30,14 +29,13 @@ def drop_heaviest(packing):
 
 
 def main(generations=30, seed=4):
-    rng = Random(seed)
-    problem = knapsack(VALUES, WEIGHTS, CAPACITY, seed)
+    problem = knapsack(VALUES, WEIGHTS, CAPACITY)
     stop = max_iterations(generations)
     repaired = genetic_algorithm(
         problem, stop=stop, rng=seed, repair=drop_heaviest)
     # penalty: 10 value units per unit of overweight; any bit string is ok
     soft = penalty(
-        replace(problem, generate=lambda: [
+        replace(problem, generate=lambda rng: [
             rng.randint(0, 1) for _ in VALUES]),
         lambda s: 10 * max(0, weight(s) - CAPACITY))
     penalized = genetic_algorithm(soft, stop=stop, rng=seed)

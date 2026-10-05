@@ -21,10 +21,8 @@ run) and `summary.json` (aggregates and mean convergence curves);
   compared at equal objective cost. The GA checks `stop` once per
   generation and may overshoot by one generation; with a population of 10
   it lands exactly on 2000 here.
-- **Seeds:** 20 per (benchmark, heuristic), `0..19`. The seed drives both
-  the heuristic's `rng` and a private copy of the benchmark's `generate`
-  stream (benchmarks seed theirs once at build time, so runs would
-  otherwise share one stream).
+- **Seeds:** 20 per (benchmark, heuristic), `0..19`. The seed drives the heuristic's `rng`,
+  which `generate` also draws from.
 - **Metrics:** final best value, `gap(benchmark, value)` (0 = optimal;
   absolute for the continuous optima at 0), success rate (final gap
   <= 1e-3), evaluation count, wall time, and the gap of the best-so-far

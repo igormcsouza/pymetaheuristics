@@ -6,14 +6,14 @@ from pymetaheuristics.core import (
 
 
 def problem(direction=Direction.MINIMIZE):
-    return Problem(generate=lambda: 0, evaluate=lambda x: x,
+    return Problem(generate=lambda rng: 0, evaluate=lambda x: x,
                    direction=direction)
 
 
 def walker(delta, record=None):
     """init/step pair: x moves by ``delta`` per step, one evaluation each."""
     def init(problem):
-        x = problem.generate()
+        x = problem.generate(None)
         return x, x, problem.evaluate(x), record
 
     def step(problem, x):

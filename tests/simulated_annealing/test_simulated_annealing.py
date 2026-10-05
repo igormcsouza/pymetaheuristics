@@ -13,7 +13,7 @@ WEIGHTS, VALUES, CAP = [3, 4, 5, 9], [4, 5, 7, 10], 9
 
 def knapsack(direction=Direction.MAXIMIZE):
     return Problem(
-        generate=lambda: [0, 0, 0, 0],
+        generate=lambda rng: [0, 0, 0, 0],
         evaluate=lambda s: sum(v * b for v, b in zip(VALUES, s)),
         feasible=lambda s: sum(w * b for w, b in zip(WEIGHTS, s)) <= CAP,
         direction=direction)
@@ -25,7 +25,7 @@ DIST = [[0, 1, 5, 4], [1, 0, 2, 6], [5, 2, 0, 3], [4, 6, 3, 0]]
 def tsp(direction=Direction.MINIMIZE):
     def length(t):
         return sum(DIST[t[i - 1]][t[i]] for i in range(len(t)))
-    return Problem(generate=lambda: [0, 2, 1, 3], evaluate=length,
+    return Problem(generate=lambda rng: [0, 2, 1, 3], evaluate=length,
                    direction=direction)
 
 
@@ -81,7 +81,7 @@ def test_zero_temperature_is_greedy():
 
 
 def test_infeasible_neighbours_are_bounded():
-    p = Problem(generate=lambda: [0, 0], evaluate=lambda s: sum(s),
+    p = Problem(generate=lambda rng: [0, 0], evaluate=lambda s: sum(s),
                 feasible=lambda s: s == [0, 0])
     r = simulated_annealing(
         p, stop=max_iterations(5), rng=1, neighbor=bit_flip_neighbor,

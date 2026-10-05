@@ -10,10 +10,9 @@ from pymetaheuristics.genetic_algorithm import genetic_algorithm
 
 def make_problem(direction=Direction.MINIMIZE, seed=0, feasible=None):
     """Genomes of 6 ints in [0, 9]; objective is their sum."""
-    gen = Random(seed)
     kwargs = {} if feasible is None else {'feasible': feasible}
     return Problem(
-        generate=lambda: [gen.randint(0, 9) for _ in range(6)],
+        generate=lambda rng: [rng.randint(0, 9) for _ in range(6)],
         evaluate=sum, direction=direction, **kwargs)
 
 
@@ -131,9 +130,8 @@ def test_repair_fixes_infeasible_children():
     def feasible(genome):
         return 0 not in genome
 
-    gen = Random(0)
     problem = Problem(
-        generate=lambda: [gen.randint(1, 9) for _ in range(4)],
+        generate=lambda rng: [rng.randint(1, 9) for _ in range(4)],
         evaluate=sum, feasible=feasible)
     repaired = []
 
@@ -184,10 +182,10 @@ def test_population_is_bred_not_resampled():
     generated = 0
     base = make_problem()
 
-    def generate():
+    def generate(rng):
         nonlocal generated
         generated += 1
-        return base.generate()
+        return base.generate(rng)
 
     genetic_algorithm(
         Problem(generate=generate, evaluate=sum), stop=max_iterations(5),

@@ -4,7 +4,7 @@ from pymetaheuristics.core.problem import Direction, Problem
 
 def test_counts_and_preserves_problem():
     problem = Problem(
-        generate=lambda: 1, evaluate=lambda x: x * 2,
+        generate=lambda rng: 1, evaluate=lambda x: x * 2,
         direction=Direction.MAXIMIZE)
     counted, evaluations = counting(problem)
     assert evaluations() == 0

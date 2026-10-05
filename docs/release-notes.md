@@ -77,13 +77,10 @@ genome, value = ga.train(epochs=15, pop_size=10, rng=42)
 ```
 
 ```python
-from random import Random
-
 from pymetaheuristics.core import Problem, max_iterations
 from pymetaheuristics.genetic_algorithm import genetic_algorithm
 
-seeded = Random(0)
-problem = Problem(generate=lambda: seeded.sample(range(5), 5),
+problem = Problem(generate=lambda rng: rng.sample(range(5), 5),
                   evaluate=lambda s: sum(abs(g - i) for i, g in enumerate(s)))
 result = genetic_algorithm(problem, stop=max_iterations(15), rng=42,
                            population_size=10)

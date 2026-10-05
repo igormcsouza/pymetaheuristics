@@ -15,7 +15,7 @@ frozen dataclass of four fields:
 
 | Field | Signature | Meaning |
 |---|---|---|
-| `generate` | `() -> solution` | a random candidate solution |
+| `generate` | `(rng) -> solution` | a random candidate solution |
 | `evaluate` | `(solution) -> float` | the objective value |
 | `feasible` | `(solution) -> bool` | whether the solution is allowed (default: always) |
 | `direction` | `Direction` | `MINIMIZE` (default) or `MAXIMIZE` |
@@ -25,14 +25,11 @@ frozen dataclass of four fields:
     operators work on lists: bit lists, permutations or lists of floats.
 
 ```python
-from random import Random
-
 from pymetaheuristics.core import Direction, Problem
 
 VALUES = [60, 100, 120, 80, 30]
 WEIGHTS = [10, 20, 30, 25, 5]
 CAPACITY = 50
-seeded = Random(0)
 
 
 def weight(packing):
@@ -44,7 +41,7 @@ def value(packing):
 
 
 knapsack = Problem(
-    generate=lambda: [seeded.randint(0, 1) for _ in VALUES],
+    generate=lambda rng: [rng.randint(0, 1) for _ in VALUES],
     evaluate=value,
     feasible=lambda packing: weight(packing) <= CAPACITY,
     direction=Direction.MAXIMIZE,

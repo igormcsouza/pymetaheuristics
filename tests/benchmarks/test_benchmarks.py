@@ -1,3 +1,4 @@
+from random import Random
 from itertools import permutations, product
 
 import pytest
@@ -30,8 +31,9 @@ def test_known_best_solution(b):
 
 @pytest.mark.parametrize('b', ALL, ids=ids(ALL))
 def test_generate_feasible_and_not_better_than_best(b):
+    rng = Random(0)
     for _ in range(50):
-        s = b.problem.generate()
+        s = b.problem.generate(rng)
         assert b.problem.feasible(s)
         v = b.problem.evaluate(s)
         if b.problem.direction is Direction.MAXIMIZE:

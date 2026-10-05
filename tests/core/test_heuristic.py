@@ -12,7 +12,7 @@ def hill_climb(problem, *, stop, rng=None, step=3):
     problem, evaluations = counting(problem)
     sign = 1 if problem.direction is Direction.MINIMIZE else -1
     start = perf_counter()
-    best = problem.generate()
+    best = problem.generate(rng)
     best_value = problem.evaluate(best)
     history, iteration = [best_value], 0
     while True:
@@ -33,7 +33,7 @@ def hill_climb(problem, *, stop, rng=None, step=3):
 
 def make_problem(direction=Direction.MINIMIZE):
     sign = 1 if direction is Direction.MINIMIZE else -1
-    return Problem(generate=lambda: 100,
+    return Problem(generate=lambda rng: 100,
                    evaluate=lambda x: sign * (x - 7) ** 2,
                    direction=direction)
 

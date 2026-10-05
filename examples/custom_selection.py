@@ -21,7 +21,7 @@ def tournament_selection(population, fitness, rng, direction=None, k=2,
 
 
 def main(generations=30, seed=1):
-    problem = knapsack([60, 100, 120, 80, 30], [10, 20, 30, 25, 5], 50, seed)
+    problem = knapsack([60, 100, 120, 80, 30], [10, 20, 30, 25, 5], 50)
     result = genetic_algorithm(
         problem, stop=max_iterations(generations), rng=seed,
         selection=tournament_selection)

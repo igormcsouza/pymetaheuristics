@@ -26,18 +26,15 @@ uv add pymetaheuristics
 ## Quickstart
 
 ```python
-from random import Random
-
 from pymetaheuristics.core import Direction, Problem, max_iterations
 from pymetaheuristics.genetic_algorithm import genetic_algorithm
 from pymetaheuristics.simulated_annealing import (
     bit_flip_neighbor, simulated_annealing)
 
 VALUES, WEIGHTS, CAPACITY = [60, 100, 120], [10, 20, 30], 50
-seeded = Random(0)
 
 knapsack = Problem(
-    generate=lambda: [seeded.randint(0, 1) for _ in VALUES],
+    generate=lambda rng: [rng.randint(0, 1) for _ in VALUES],
     evaluate=lambda s: sum(v for v, bit in zip(VALUES, s) if bit),
     feasible=lambda s: sum(w for w, bit in zip(WEIGHTS, s) if bit)
     <= CAPACITY,
