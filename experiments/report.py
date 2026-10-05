@@ -69,6 +69,62 @@ def plot(summary, out=DOCS / 'img'):
     return paths
 
 
+def plot_overview(summary, out=DOCS / 'img'):
+    """Two PNGs for the landing pages: share of random search's final gap
+    each heuristic closes (0 = no better than the baseline, 100 = optimum;
+    worse than random is shown as 0) and mean time per run.
+    Benchmarks where random search already finds the optimum (gap 0) are
+    left out of the first chart: the ratio is undefined."""
+    try:
+        import matplotlib
+        matplotlib.use('Agg')
+        import matplotlib.pyplot as plt
+    except ImportError:
+        return []
+    out.mkdir(parents=True, exist_ok=True)
+    by = {(s['benchmark'], s['heuristic']): s for s in summary}
+    benches = list(dict.fromkeys(s['benchmark'] for s in summary))
+    heuristics = [h for h in dict.fromkeys(s['heuristic'] for s in summary)
+                  if h != 'random_search']
+    hard = [b for b in benches if by[b, 'random_search']['gap_mean'] > 0]
+
+    def bars(ax, names, value, title, ylabel):
+        width = 0.8 / len(heuristics)
+        for i, h in enumerate(heuristics):
+            ax.bar([x + i * width for x in range(len(names))],
+                   [value(n, h) for n in names], width, label=h)
+        ax.set_xticks([x + 0.4 - width / 2 for x in range(len(names))])
+        ax.set_xticklabels(names, fontsize=8)
+        ax.set_title(title)
+        ax.set_ylabel(ylabel)
+        ax.grid(axis='y', alpha=0.3)
+
+    paths = []
+    fig, ax = plt.subplots(figsize=(6, 3.6))
+    bars(ax, hard, lambda b, h: 100 * max(
+             1 - by[b, h]['gap_mean'] / by[b, 'random_search']['gap_mean'],
+             0),
+         'Gap to the optimum closed, vs random search',
+         '% of random-search gap closed')
+    ax.set_ylim(0, 135)
+    ax.set_yticks(range(0, 101, 20))
+    ax.legend(fontsize=7, loc='upper center', ncol=3)
+    paths.append(out / 'overview-gap.png')
+    fig.tight_layout()
+    fig.savefig(paths[-1], dpi=100)
+    plt.close(fig)
+
+    fig, ax = plt.subplots(figsize=(6, 3.6))
+    bars(ax, benches, lambda b, h: 1000 * by[b, h]['wall_time_mean'],
+         'Time per run (2000 evaluations)', 'mean wall time (ms)')
+    ax.legend(fontsize=8)
+    paths.append(out / 'overview-time.png')
+    fig.tight_layout()
+    fig.savefig(paths[-1], dpi=100)
+    plt.close(fig)
+    return paths
+
+
 def render(summary, doc=DOCS / 'experiments.md'):
     text = doc.read_text()
     head, rest = text.split(START)
@@ -81,3 +137,4 @@ if __name__ == '__main__':
     summary = json.loads((RESULTS / 'summary.json').read_text())
     render(summary)
     plot(summary)
+    plot_overview(summary)

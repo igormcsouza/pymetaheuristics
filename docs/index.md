@@ -85,6 +85,28 @@ Switching heuristics changes only the call:
                                crossover=pmx_single_point)
     ```
 
+=== "Artificial Bee Colony"
+
+    ```python
+    from pymetaheuristics.artificial_bee_colony import artificial_bee_colony
+
+    result = artificial_bee_colony(problem, stop=max_iterations(50), rng=0)
+    ```
+
+## How well does it work?
+
+Every heuristic against random search on the [benchmark suite](benchmarks.md), with
+the same budget of 2000 evaluations over 20 seeds
+([details](experiments.md)):
+
+![Gap closed versus random search](img/overview-gap.png)
+![Time per run](img/overview-time.png)
+
+On TSP all three heuristics find the optimum on every seed and on the
+sphere the GA and SA come within 0.2% of it, while random search stays far
+off. Rastrigin is hard for all of them with this budget. A full run takes
+about 10-30 ms.
+
 ## What can I do?
 
 | I want to... | Go to |

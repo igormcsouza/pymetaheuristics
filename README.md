@@ -48,6 +48,20 @@ print(ga.best_solution, ga.best_value)  # [0, 1, 1] 220
 print(sa.best_solution, sa.best_value)  # [0, 1, 1] 220
 ```
 
+## How well does it work?
+
+Every heuristic against random search on the [benchmark suite](docs/benchmarks.md), with
+the same budget of 2000 evaluations over 20 seeds
+([details](docs/experiments.md)):
+
+![Gap closed versus random search](docs/img/overview-gap.png)
+![Time per run](docs/img/overview-time.png)
+
+On TSP all three heuristics find the optimum on every seed and on the
+sphere the GA and SA come within 0.2% of it, while random search stays far
+off. Rastrigin is hard for all of them with this budget. A full run takes
+about 10-30 ms.
+
 ## Documentation
 
 The documentation lives in [docs/](docs/). Start with [docs/index.md](docs/index.md),
