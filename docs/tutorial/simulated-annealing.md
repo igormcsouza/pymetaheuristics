@@ -35,4 +35,4 @@ evaluation.
 - You supply a `neighbor` move and a `cooling` schedule.
 - Each iteration costs at most one evaluation.
 
-Next: [read the results](results.md).
+Next: [Artificial Bee Colony](artificial-bee-colony.md).

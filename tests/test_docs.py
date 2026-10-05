@@ -12,7 +12,8 @@ import pytest
 
 ROOT = Path(__file__).parent.parent
 TUTORIAL = ['problem', 'constraints', 'stopping', 'operators',
-            'genetic-algorithm', 'simulated-annealing', 'results']
+            'genetic-algorithm', 'simulated-annealing',
+            'artificial-bee-colony', 'results']
 # The tutorial pages build on each other, so they share one namespace.
 PAGES = ['README.md', 'docs/index.md',
          ['docs/tutorial/%s.md' % name for name in TUTORIAL],
